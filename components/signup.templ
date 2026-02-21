@@ -1,0 +1,100 @@
+package components
+
+templ Signup(csrfToken string) {
+	@Layout("Sign Up") {
+		<div class="max-w-md mx-auto">
+			<h1 class="text-3xl font-bold mb-6">Create Account</h1>
+			<form
+				hx-post="/signup"
+				hx-target="#form-result"
+				hx-swap="innerHTML"
+				class="space-y-4"
+				onsubmit="return validatePasswords()"
+			>
+				<input type="hidden" name="gorilla.csrf.Token" value={ csrfToken }/>
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">Email</span>
+					</label>
+					<input
+						type="email"
+						name="email"
+						placeholder="you@example.com"
+						class="input input-bordered"
+						required
+					/>
+				</div>
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">Password</span>
+					</label>
+					<input
+						type="password"
+						name="password"
+						id="password"
+						placeholder="Minimum 8 characters"
+						class="input input-bordered"
+						required
+						minlength="8"
+					/>
+				</div>
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text">Confirm Password</span>
+					</label>
+					<input
+						type="password"
+						name="confirm_password"
+						id="confirm_password"
+						placeholder="Re-enter your password"
+						class="input input-bordered"
+						required
+						minlength="8"
+					/>
+					<p id="password-error" class="text-error text-sm mt-1 hidden">Passwords do not match</p>
+				</div>
+				<button type="submit" class="btn btn-primary w-full">
+					Create Account
+				</button>
+			</form>
+			<div id="form-result" class="mt-4"></div>
+			<p class="text-center mt-4 text-sm">
+				Already have an account? <a href="/login" class="link">Log in</a>
+			</p>
+		</div>
+		<script>
+			function validatePasswords() {
+				const password = document.getElementById('password').value;
+				const confirmPassword = document.getElementById('confirm_password').value;
+				const errorElement = document.getElementById('password-error');
+				
+				if (password !== confirmPassword) {
+					errorElement.classList.remove('hidden');
+					return false;
+				}
+				
+				errorElement.classList.add('hidden');
+				return true;
+			}
+			
+			document.getElementById('confirm_password').addEventListener('input', function() {
+				const errorElement = document.getElementById('password-error');
+				errorElement.classList.add('hidden');
+			});
+		</script>
+	}
+}
+
+templ SignupSuccess() {
+	<div class="alert alert-success">
+		<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+		<span>Account created successfully! Please <a href="/login" class="link">log in</a>.</span>
+	</div>
+}
+
+templ SignupError(message string) {
+	<div class="alert alert-error">
+		<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+		<span>{ message }</span>
+	</div>
+}

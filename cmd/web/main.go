@@ -44,6 +44,8 @@ func main() {
 		r.Get("/about", handlers.About)
 		r.Get("/contact", handlers.ContactForm)
 		r.Post("/contact", handlers.ContactSubmit)
+		r.Get("/signup", handlers.SignupForm)
+		r.Post("/signup", handlers.SignupSubmit)
 	})
 
 	port := os.Getenv("PORT")
