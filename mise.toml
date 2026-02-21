@@ -1,0 +1,44 @@
+[tools]
+go = "latest"
+"go:github.com/a-h/templ/cmd/templ" = "latest"
+"go:github.com/sqlc-dev/sqlc/cmd/sqlc" = "latest"
+"go:github.com/golang-migrate/migrate/v4/cmd/migrate" = { version = "latest", tags = "postgres" }
+"go:github.com/air-verse/air" = "latest"
+
+[env]
+DATABASE_URL = "postgres://postgres:postgres@localhost:5432/appdb?sslmode=disable"
+PORT = "3000"
+CSRF_KEY = "tz8geD06YVitd/rb/PmfsSnC2Pj/K2pa"
+
+[tasks.dev]
+description = "Start development server with live reload"
+run = "air"
+
+[tasks.templ]
+description = "Generate templ files"
+run = "templ generate"
+
+[tasks.db-migrate]
+description = "Run database migrations"
+run = "migrate -path migrations -database ${DATABASE_URL} up"
+
+[tasks.db-rollback]
+description = "Rollback last migration"
+run = "migrate -path migrations -database ${DATABASE_URL} down 1"
+
+[tasks.sqlc]
+description = "Generate type-safe Go from SQL"
+run = "sqlc generate"
+
+[tasks.setup]
+description = "Initial project setup (install deps, setup DB, generate code)"
+run = """
+migrate -path migrations -database ${DATABASE_URL} up
+templ generate
+sqlc generate
+"""
+dir = "."
+
+[tasks.build]
+description = "Build production binary"
+run = "go build -o bin/app cmd/web/main.go"
