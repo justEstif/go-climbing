@@ -1,10 +1,11 @@
 ---
 # go-climbing-q58m
 title: Build login page
-status: todo
+status: completed
 type: task
+priority: normal
 created_at: 2026-02-21T23:00:30Z
-updated_at: 2026-02-21T23:00:30Z
+updated_at: 2026-02-21T23:28:36Z
 parent: go-climbing-rbkl
 ---
 
