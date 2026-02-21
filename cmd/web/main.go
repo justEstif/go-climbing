@@ -18,6 +18,10 @@ func main() {
 	if err := database.InitDB(); err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
+	defer database.Close()
+
+	// Initialize session manager
+	customMiddleware.InitSessionManager(database.Pool)
 
 	r := chi.NewRouter()
 
@@ -26,6 +30,9 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
+
+	// Session middleware - handles loading and saving session data
+	r.Use(customMiddleware.SessionManager.LoadAndSave)
 
 	// CSRF protection - set secure=true in production
 	csrfKey := []byte(os.Getenv("CSRF_KEY"))
@@ -37,7 +44,7 @@ func main() {
 	// Static files (no CSRF needed)
 	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	// Protected routes with CSRF
+	// Public routes with CSRF
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMw)
 		r.Get("/", handlers.Home)
@@ -46,7 +53,12 @@ func main() {
 		r.Post("/contact", handlers.ContactSubmit)
 		r.Get("/signup", handlers.SignupForm)
 		r.Post("/signup", handlers.SignupSubmit)
+		r.Get("/login", handlers.LoginForm)
+		r.Post("/login", handlers.LoginSubmit)
 	})
+
+	// Logout route (no CSRF needed for logout)
+	r.Post("/logout", handlers.Logout)
 
 	port := os.Getenv("PORT")
 	if port == "" {

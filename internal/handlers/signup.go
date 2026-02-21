@@ -5,6 +5,9 @@ import (
 
 	"github.com/gorilla/csrf"
 	"github.com/justestif/go-climbing/components"
+	"github.com/justestif/go-climbing/internal/database"
+	"github.com/justestif/go-climbing/internal/middleware"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func SignupForm(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +40,36 @@ func SignupSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Note: Actual user creation with bcrypt hashing will be implemented in bean go-climbing-y8pb
-	// For now, return success to demonstrate the form flow
+	// Check if user already exists
+	existingUser, err := database.DB.GetUserByEmail(r.Context(), email)
+	if err == nil && existingUser.ID != 0 {
+		components.SignupError("Email already registered").Render(r.Context(), w)
+		return
+	}
+
+	// Hash password with bcrypt
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		components.SignupError("Error processing password").Render(r.Context(), w)
+		return
+	}
+
+	// Create user in database
+	user, err := database.DB.CreateUser(r.Context(), database.CreateUserParams{
+		Email:           email,
+		PasswordHash:    string(hashedPassword),
+		CurrentMaxGrade: 0,
+		GoalGrade:       0,
+		SessionsPerWeek: 0,
+		Weaknesses:      []byte("[]"),
+	})
+	if err != nil {
+		components.SignupError("Error creating account").Render(r.Context(), w)
+		return
+	}
+
+	// Store user ID in session to automatically log them in
+	middleware.SessionManager.Put(r.Context(), "userID", int(user.ID))
+
 	components.SignupSuccess().Render(r.Context(), w)
 }
