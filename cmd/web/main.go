@@ -48,9 +48,6 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMw)
 		r.Get("/", handlers.Home)
-		r.Get("/about", handlers.About)
-		r.Get("/contact", handlers.ContactForm)
-		r.Post("/contact", handlers.ContactSubmit)
 		r.Get("/signup", handlers.SignupForm)
 		r.Post("/signup", handlers.SignupSubmit)
 		r.Get("/login", handlers.LoginForm)
