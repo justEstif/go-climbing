@@ -25,6 +25,7 @@ go.work
 # Environment
 .env
 mise.local.toml
+.opencode/
 
 # IDE
 .idea/
@@ -44,3 +45,4 @@ bun.lockb
 # Database
 *.db
 *.sqlite
+/web
