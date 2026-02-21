@@ -8,10 +8,47 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type LearnContent struct {
+	ID        int32       `json:"id"`
+	Category  string      `json:"category"`
+	Title     string      `json:"title"`
+	Content   string      `json:"content"`
+	VideoUrl  pgtype.Text `json:"video_url"`
+	SortOrder pgtype.Int4 `json:"sort_order"`
+}
+
+type Session struct {
+	ID             int32            `json:"id"`
+	UserID         pgtype.Int4      `json:"user_id"`
+	SessionNumber  int32            `json:"session_number"`
+	Date           pgtype.Date      `json:"date"`
+	FocusType      string           `json:"focus_type"`
+	PlannedWarmup  []byte           `json:"planned_warmup"`
+	PlannedMain    []byte           `json:"planned_main"`
+	PlannedProject []byte           `json:"planned_project"`
+	CreatedAt      pgtype.Timestamp `json:"created_at"`
+}
+
+type SessionLog struct {
+	ID            int32            `json:"id"`
+	SessionID     pgtype.Int4      `json:"session_id"`
+	UserID        pgtype.Int4      `json:"user_id"`
+	RoutesLogged  []byte           `json:"routes_logged"`
+	NewMaxGrade   pgtype.Int4      `json:"new_max_grade"`
+	EnergyLevel   pgtype.Int4      `json:"energy_level"`
+	SkinCondition pgtype.Text      `json:"skin_condition"`
+	Soreness      pgtype.Int4      `json:"soreness"`
+	Notes         pgtype.Text      `json:"notes"`
+	LoggedAt      pgtype.Timestamp `json:"logged_at"`
+}
+
 type User struct {
-	ID        int32            `json:"id"`
-	Name      string           `json:"name"`
-	Email     string           `json:"email"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	ID              int32            `json:"id"`
+	Email           string           `json:"email"`
+	PasswordHash    string           `json:"password_hash"`
+	CurrentMaxGrade int32            `json:"current_max_grade"`
+	GoalGrade       int32            `json:"goal_grade"`
+	SessionsPerWeek int32            `json:"sessions_per_week"`
+	Weaknesses      []byte           `json:"weaknesses"`
+	CreatedAt       pgtype.Timestamp `json:"created_at"`
 }

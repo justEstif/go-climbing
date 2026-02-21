@@ -1,11 +1,11 @@
 ---
 # go-climbing-exvm
 title: Create database schema with users table
-status: todo
+status: completed
 type: task
 priority: normal
 created_at: 2026-02-21T23:00:29Z
-updated_at: 2026-02-21T23:02:23Z
+updated_at: 2026-02-21T23:10:11Z
 parent: go-climbing-rbkl
 ---
 
@@ -57,3 +57,31 @@ CREATE TABLE learn_content (
     sort_order INTEGER DEFAULT 0
 );
 ```
+
+
+
+## Summary of Changes
+
+Migration files created and SQLC code generated successfully:
+
+1. **Created **
+   - Drops simple users table from migration 001
+   - Creates comprehensive estifanos estifanos table with climbing profile fields
+   - Creates  table for training sessions
+   - Creates  table for completed session tracking
+   - Creates  table for educational resources
+   - Added indexes for performance on frequently queried columns
+
+2. **Created **
+   - Rollback script to drop all new tables
+
+3. **Updated **
+   - Added CRUD queries for users, sessions, session_logs, and learn_content tables
+   - Updated user queries to match new schema (removed 'name' field, added climbing fields)
+
+4. **Generated type-safe Go code via SQLC**
+   - All database models and query methods auto-generated
+   - Application compiles successfully
+
+**Note:** Database migrations need to be run against a running PostgreSQL instance. Run:
+

@@ -7,30 +7,195 @@ package database
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createLearnContent = `-- name: CreateLearnContent :one
+INSERT INTO learn_content (category, title, content, video_url, sort_order)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, category, title, content, video_url, sort_order
+`
+
+type CreateLearnContentParams struct {
+	Category  string      `json:"category"`
+	Title     string      `json:"title"`
+	Content   string      `json:"content"`
+	VideoUrl  pgtype.Text `json:"video_url"`
+	SortOrder pgtype.Int4 `json:"sort_order"`
+}
+
+func (q *Queries) CreateLearnContent(ctx context.Context, arg CreateLearnContentParams) (LearnContent, error) {
+	row := q.db.QueryRow(ctx, createLearnContent,
+		arg.Category,
+		arg.Title,
+		arg.Content,
+		arg.VideoUrl,
+		arg.SortOrder,
+	)
+	var i LearnContent
+	err := row.Scan(
+		&i.ID,
+		&i.Category,
+		&i.Title,
+		&i.Content,
+		&i.VideoUrl,
+		&i.SortOrder,
+	)
+	return i, err
+}
+
+const createSession = `-- name: CreateSession :one
+INSERT INTO sessions (user_id, session_number, date, focus_type, planned_warmup, planned_main, planned_project)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, user_id, session_number, date, focus_type, planned_warmup, planned_main, planned_project, created_at
+`
+
+type CreateSessionParams struct {
+	UserID         pgtype.Int4 `json:"user_id"`
+	SessionNumber  int32       `json:"session_number"`
+	Date           pgtype.Date `json:"date"`
+	FocusType      string      `json:"focus_type"`
+	PlannedWarmup  []byte      `json:"planned_warmup"`
+	PlannedMain    []byte      `json:"planned_main"`
+	PlannedProject []byte      `json:"planned_project"`
+}
+
+func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error) {
+	row := q.db.QueryRow(ctx, createSession,
+		arg.UserID,
+		arg.SessionNumber,
+		arg.Date,
+		arg.FocusType,
+		arg.PlannedWarmup,
+		arg.PlannedMain,
+		arg.PlannedProject,
+	)
+	var i Session
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.SessionNumber,
+		&i.Date,
+		&i.FocusType,
+		&i.PlannedWarmup,
+		&i.PlannedMain,
+		&i.PlannedProject,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const createSessionLog = `-- name: CreateSessionLog :one
+INSERT INTO session_logs (session_id, user_id, routes_logged, new_max_grade, energy_level, skin_condition, soreness, notes)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING id, session_id, user_id, routes_logged, new_max_grade, energy_level, skin_condition, soreness, notes, logged_at
+`
+
+type CreateSessionLogParams struct {
+	SessionID     pgtype.Int4 `json:"session_id"`
+	UserID        pgtype.Int4 `json:"user_id"`
+	RoutesLogged  []byte      `json:"routes_logged"`
+	NewMaxGrade   pgtype.Int4 `json:"new_max_grade"`
+	EnergyLevel   pgtype.Int4 `json:"energy_level"`
+	SkinCondition pgtype.Text `json:"skin_condition"`
+	Soreness      pgtype.Int4 `json:"soreness"`
+	Notes         pgtype.Text `json:"notes"`
+}
+
+func (q *Queries) CreateSessionLog(ctx context.Context, arg CreateSessionLogParams) (SessionLog, error) {
+	row := q.db.QueryRow(ctx, createSessionLog,
+		arg.SessionID,
+		arg.UserID,
+		arg.RoutesLogged,
+		arg.NewMaxGrade,
+		arg.EnergyLevel,
+		arg.SkinCondition,
+		arg.Soreness,
+		arg.Notes,
+	)
+	var i SessionLog
+	err := row.Scan(
+		&i.ID,
+		&i.SessionID,
+		&i.UserID,
+		&i.RoutesLogged,
+		&i.NewMaxGrade,
+		&i.EnergyLevel,
+		&i.SkinCondition,
+		&i.Soreness,
+		&i.Notes,
+		&i.LoggedAt,
+	)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (name, email)
-VALUES ($1, $2)
-RETURNING id, name, email, created_at, updated_at
+INSERT INTO users (email, password_hash, current_max_grade, goal_grade, sessions_per_week, weaknesses)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, email, password_hash, current_max_grade, goal_grade, sessions_per_week, weaknesses, created_at
 `
 
 type CreateUserParams struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Email           string `json:"email"`
+	PasswordHash    string `json:"password_hash"`
+	CurrentMaxGrade int32  `json:"current_max_grade"`
+	GoalGrade       int32  `json:"goal_grade"`
+	SessionsPerWeek int32  `json:"sessions_per_week"`
+	Weaknesses      []byte `json:"weaknesses"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, createUser, arg.Name, arg.Email)
+	row := q.db.QueryRow(ctx, createUser,
+		arg.Email,
+		arg.PasswordHash,
+		arg.CurrentMaxGrade,
+		arg.GoalGrade,
+		arg.SessionsPerWeek,
+		arg.Weaknesses,
+	)
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Name,
 		&i.Email,
+		&i.PasswordHash,
+		&i.CurrentMaxGrade,
+		&i.GoalGrade,
+		&i.SessionsPerWeek,
+		&i.Weaknesses,
 		&i.CreatedAt,
-		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const deleteLearnContent = `-- name: DeleteLearnContent :exec
+DELETE FROM learn_content
+WHERE id = $1
+`
+
+func (q *Queries) DeleteLearnContent(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteLearnContent, id)
+	return err
+}
+
+const deleteSession = `-- name: DeleteSession :exec
+DELETE FROM sessions
+WHERE id = $1
+`
+
+func (q *Queries) DeleteSession(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteSession, id)
+	return err
+}
+
+const deleteSessionLog = `-- name: DeleteSessionLog :exec
+DELETE FROM session_logs
+WHERE id = $1
+`
+
+func (q *Queries) DeleteSessionLog(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteSessionLog, id)
+	return err
 }
 
 const deleteUser = `-- name: DeleteUser :exec
@@ -43,26 +208,297 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return err
 }
 
-const getUser = `-- name: GetUser :one
-SELECT id, name, email, created_at, updated_at FROM users
+const getLearnContent = `-- name: GetLearnContent :one
+
+SELECT id, category, title, content, video_url, sort_order FROM learn_content
 WHERE id = $1 LIMIT 1
 `
 
+// Learn Content Queries
+func (q *Queries) GetLearnContent(ctx context.Context, id int32) (LearnContent, error) {
+	row := q.db.QueryRow(ctx, getLearnContent, id)
+	var i LearnContent
+	err := row.Scan(
+		&i.ID,
+		&i.Category,
+		&i.Title,
+		&i.Content,
+		&i.VideoUrl,
+		&i.SortOrder,
+	)
+	return i, err
+}
+
+const getSession = `-- name: GetSession :one
+
+SELECT id, user_id, session_number, date, focus_type, planned_warmup, planned_main, planned_project, created_at FROM sessions
+WHERE id = $1 LIMIT 1
+`
+
+// Session Queries
+func (q *Queries) GetSession(ctx context.Context, id int32) (Session, error) {
+	row := q.db.QueryRow(ctx, getSession, id)
+	var i Session
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.SessionNumber,
+		&i.Date,
+		&i.FocusType,
+		&i.PlannedWarmup,
+		&i.PlannedMain,
+		&i.PlannedProject,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getSessionLog = `-- name: GetSessionLog :one
+
+SELECT id, session_id, user_id, routes_logged, new_max_grade, energy_level, skin_condition, soreness, notes, logged_at FROM session_logs
+WHERE id = $1 LIMIT 1
+`
+
+// Session Log Queries
+func (q *Queries) GetSessionLog(ctx context.Context, id int32) (SessionLog, error) {
+	row := q.db.QueryRow(ctx, getSessionLog, id)
+	var i SessionLog
+	err := row.Scan(
+		&i.ID,
+		&i.SessionID,
+		&i.UserID,
+		&i.RoutesLogged,
+		&i.NewMaxGrade,
+		&i.EnergyLevel,
+		&i.SkinCondition,
+		&i.Soreness,
+		&i.Notes,
+		&i.LoggedAt,
+	)
+	return i, err
+}
+
+const getUser = `-- name: GetUser :one
+
+SELECT id, email, password_hash, current_max_grade, goal_grade, sessions_per_week, weaknesses, created_at FROM users
+WHERE id = $1 LIMIT 1
+`
+
+// User Queries
 func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 	row := q.db.QueryRow(ctx, getUser, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Name,
 		&i.Email,
+		&i.PasswordHash,
+		&i.CurrentMaxGrade,
+		&i.GoalGrade,
+		&i.SessionsPerWeek,
+		&i.Weaknesses,
 		&i.CreatedAt,
-		&i.UpdatedAt,
 	)
 	return i, err
 }
 
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, email, password_hash, current_max_grade, goal_grade, sessions_per_week, weaknesses, created_at FROM users
+WHERE email = $1 LIMIT 1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.PasswordHash,
+		&i.CurrentMaxGrade,
+		&i.GoalGrade,
+		&i.SessionsPerWeek,
+		&i.Weaknesses,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const listAllLearnContent = `-- name: ListAllLearnContent :many
+SELECT id, category, title, content, video_url, sort_order FROM learn_content
+ORDER BY category ASC, sort_order ASC, title ASC
+`
+
+func (q *Queries) ListAllLearnContent(ctx context.Context) ([]LearnContent, error) {
+	rows, err := q.db.Query(ctx, listAllLearnContent)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []LearnContent{}
+	for rows.Next() {
+		var i LearnContent
+		if err := rows.Scan(
+			&i.ID,
+			&i.Category,
+			&i.Title,
+			&i.Content,
+			&i.VideoUrl,
+			&i.SortOrder,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listLearnContentByCategory = `-- name: ListLearnContentByCategory :many
+SELECT id, category, title, content, video_url, sort_order FROM learn_content
+WHERE category = $1
+ORDER BY sort_order ASC, title ASC
+`
+
+func (q *Queries) ListLearnContentByCategory(ctx context.Context, category string) ([]LearnContent, error) {
+	rows, err := q.db.Query(ctx, listLearnContentByCategory, category)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []LearnContent{}
+	for rows.Next() {
+		var i LearnContent
+		if err := rows.Scan(
+			&i.ID,
+			&i.Category,
+			&i.Title,
+			&i.Content,
+			&i.VideoUrl,
+			&i.SortOrder,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listSessionLogsBySession = `-- name: ListSessionLogsBySession :many
+SELECT id, session_id, user_id, routes_logged, new_max_grade, energy_level, skin_condition, soreness, notes, logged_at FROM session_logs
+WHERE session_id = $1
+ORDER BY logged_at DESC
+`
+
+func (q *Queries) ListSessionLogsBySession(ctx context.Context, sessionID pgtype.Int4) ([]SessionLog, error) {
+	rows, err := q.db.Query(ctx, listSessionLogsBySession, sessionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []SessionLog{}
+	for rows.Next() {
+		var i SessionLog
+		if err := rows.Scan(
+			&i.ID,
+			&i.SessionID,
+			&i.UserID,
+			&i.RoutesLogged,
+			&i.NewMaxGrade,
+			&i.EnergyLevel,
+			&i.SkinCondition,
+			&i.Soreness,
+			&i.Notes,
+			&i.LoggedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listSessionLogsByUser = `-- name: ListSessionLogsByUser :many
+SELECT id, session_id, user_id, routes_logged, new_max_grade, energy_level, skin_condition, soreness, notes, logged_at FROM session_logs
+WHERE user_id = $1
+ORDER BY logged_at DESC
+`
+
+func (q *Queries) ListSessionLogsByUser(ctx context.Context, userID pgtype.Int4) ([]SessionLog, error) {
+	rows, err := q.db.Query(ctx, listSessionLogsByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []SessionLog{}
+	for rows.Next() {
+		var i SessionLog
+		if err := rows.Scan(
+			&i.ID,
+			&i.SessionID,
+			&i.UserID,
+			&i.RoutesLogged,
+			&i.NewMaxGrade,
+			&i.EnergyLevel,
+			&i.SkinCondition,
+			&i.Soreness,
+			&i.Notes,
+			&i.LoggedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listSessionsByUser = `-- name: ListSessionsByUser :many
+SELECT id, user_id, session_number, date, focus_type, planned_warmup, planned_main, planned_project, created_at FROM sessions
+WHERE user_id = $1
+ORDER BY date DESC, session_number ASC
+`
+
+func (q *Queries) ListSessionsByUser(ctx context.Context, userID pgtype.Int4) ([]Session, error) {
+	rows, err := q.db.Query(ctx, listSessionsByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Session{}
+	for rows.Next() {
+		var i Session
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.SessionNumber,
+			&i.Date,
+			&i.FocusType,
+			&i.PlannedWarmup,
+			&i.PlannedMain,
+			&i.PlannedProject,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listUsers = `-- name: ListUsers :many
-SELECT id, name, email, created_at, updated_at FROM users
+SELECT id, email, password_hash, current_max_grade, goal_grade, sessions_per_week, weaknesses, created_at FROM users
 ORDER BY created_at DESC
 `
 
@@ -77,10 +513,13 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 		var i User
 		if err := rows.Scan(
 			&i.ID,
-			&i.Name,
 			&i.Email,
+			&i.PasswordHash,
+			&i.CurrentMaxGrade,
+			&i.GoalGrade,
+			&i.SessionsPerWeek,
+			&i.Weaknesses,
 			&i.CreatedAt,
-			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -92,19 +531,116 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
+const updateLearnContent = `-- name: UpdateLearnContent :exec
+UPDATE learn_content
+SET category = $1, title = $2, content = $3, video_url = $4, sort_order = $5
+WHERE id = $6
+`
+
+type UpdateLearnContentParams struct {
+	Category  string      `json:"category"`
+	Title     string      `json:"title"`
+	Content   string      `json:"content"`
+	VideoUrl  pgtype.Text `json:"video_url"`
+	SortOrder pgtype.Int4 `json:"sort_order"`
+	ID        int32       `json:"id"`
+}
+
+func (q *Queries) UpdateLearnContent(ctx context.Context, arg UpdateLearnContentParams) error {
+	_, err := q.db.Exec(ctx, updateLearnContent,
+		arg.Category,
+		arg.Title,
+		arg.Content,
+		arg.VideoUrl,
+		arg.SortOrder,
+		arg.ID,
+	)
+	return err
+}
+
+const updateSession = `-- name: UpdateSession :exec
+UPDATE sessions
+SET session_number = $1, date = $2, focus_type = $3, planned_warmup = $4, planned_main = $5, planned_project = $6
+WHERE id = $7
+`
+
+type UpdateSessionParams struct {
+	SessionNumber  int32       `json:"session_number"`
+	Date           pgtype.Date `json:"date"`
+	FocusType      string      `json:"focus_type"`
+	PlannedWarmup  []byte      `json:"planned_warmup"`
+	PlannedMain    []byte      `json:"planned_main"`
+	PlannedProject []byte      `json:"planned_project"`
+	ID             int32       `json:"id"`
+}
+
+func (q *Queries) UpdateSession(ctx context.Context, arg UpdateSessionParams) error {
+	_, err := q.db.Exec(ctx, updateSession,
+		arg.SessionNumber,
+		arg.Date,
+		arg.FocusType,
+		arg.PlannedWarmup,
+		arg.PlannedMain,
+		arg.PlannedProject,
+		arg.ID,
+	)
+	return err
+}
+
+const updateSessionLog = `-- name: UpdateSessionLog :exec
+UPDATE session_logs
+SET routes_logged = $1, new_max_grade = $2, energy_level = $3, skin_condition = $4, soreness = $5, notes = $6
+WHERE id = $7
+`
+
+type UpdateSessionLogParams struct {
+	RoutesLogged  []byte      `json:"routes_logged"`
+	NewMaxGrade   pgtype.Int4 `json:"new_max_grade"`
+	EnergyLevel   pgtype.Int4 `json:"energy_level"`
+	SkinCondition pgtype.Text `json:"skin_condition"`
+	Soreness      pgtype.Int4 `json:"soreness"`
+	Notes         pgtype.Text `json:"notes"`
+	ID            int32       `json:"id"`
+}
+
+func (q *Queries) UpdateSessionLog(ctx context.Context, arg UpdateSessionLogParams) error {
+	_, err := q.db.Exec(ctx, updateSessionLog,
+		arg.RoutesLogged,
+		arg.NewMaxGrade,
+		arg.EnergyLevel,
+		arg.SkinCondition,
+		arg.Soreness,
+		arg.Notes,
+		arg.ID,
+	)
+	return err
+}
+
 const updateUser = `-- name: UpdateUser :exec
 UPDATE users
-SET name = $1, email = $2, updated_at = CURRENT_TIMESTAMP
-WHERE id = $3
+SET email = $1, password_hash = $2, current_max_grade = $3, goal_grade = $4, sessions_per_week = $5, weaknesses = $6
+WHERE id = $7
 `
 
 type UpdateUserParams struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	ID    int32  `json:"id"`
+	Email           string `json:"email"`
+	PasswordHash    string `json:"password_hash"`
+	CurrentMaxGrade int32  `json:"current_max_grade"`
+	GoalGrade       int32  `json:"goal_grade"`
+	SessionsPerWeek int32  `json:"sessions_per_week"`
+	Weaknesses      []byte `json:"weaknesses"`
+	ID              int32  `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.Exec(ctx, updateUser, arg.Name, arg.Email, arg.ID)
+	_, err := q.db.Exec(ctx, updateUser,
+		arg.Email,
+		arg.PasswordHash,
+		arg.CurrentMaxGrade,
+		arg.GoalGrade,
+		arg.SessionsPerWeek,
+		arg.Weaknesses,
+		arg.ID,
+	)
 	return err
 }
