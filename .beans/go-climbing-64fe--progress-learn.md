@@ -5,7 +5,9 @@ status: draft
 type: task
 priority: normal
 created_at: 2026-02-21T22:50:59Z
-updated_at: 2026-02-21T22:51:55Z
+updated_at: 2026-02-21T22:57:17Z
+blocked_by:
+    - go-climbing-8i7n
 ---
 
 - [ ] Build progress page (user's personal data only)

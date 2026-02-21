@@ -5,7 +5,9 @@ status: draft
 type: task
 priority: normal
 created_at: 2026-02-21T22:50:07Z
-updated_at: 2026-02-21T22:50:33Z
+updated_at: 2026-02-21T22:57:16Z
+blocked_by:
+    - go-climbing-rbkl
 ---
 
 - [ ] Build onboarding (only shows once after signup)

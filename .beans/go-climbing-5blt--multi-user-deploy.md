@@ -5,7 +5,9 @@ status: draft
 type: task
 priority: normal
 created_at: 2026-02-21T22:52:09Z
-updated_at: 2026-02-21T22:52:53Z
+updated_at: 2026-02-21T22:57:18Z
+blocked_by:
+    - go-climbing-64fe
 ---
 
 - [ ] Test multi-user: Create 2 accounts, verify data isolation

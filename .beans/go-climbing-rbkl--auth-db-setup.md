@@ -1,16 +1,20 @@
 ---
 # go-climbing-rbkl
 title: auth + db setup
-status: draft
-type: task
+status: todo
+type: epic
 priority: normal
 created_at: 2026-02-21T22:49:09Z
-updated_at: 2026-02-21T22:49:52Z
+updated_at: 2026-02-21T23:00:40Z
 ---
 
-- [ ] Create schema with users table
-- [ ] Build signup page (email, password, confirm password)
-- [ ] Build login page
-- [ ] Password hashing with bcrypt
-- [ ] Session middleware (protect authenticated routes)
-- [ ] Test: can you signup, login, logout?
+## Subtasks
+
+This epic has been broken down into 6 subtasks:
+
+1. Create database schema with users table (go-climbing-exvm)
+2. Build signup page (go-climbing-o78u)
+3. Build login page (go-climbing-q58m)
+4. Implement password hashing with bcrypt (go-climbing-y8pb)
+5. Create session middleware (go-climbing-zgqp)
+6. Test auth flow end-to-end (go-climbing-osmi)
