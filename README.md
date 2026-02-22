@@ -76,9 +76,9 @@ mise run setup        # Full initial setup (migrations + templ + sqlc)
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|---|---|---|
-| `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `CSRF_KEY` | Yes | 32-byte CSRF secret key |
-| `PORT` | No | Server port (default: 3000) |
-| `ENV` | No | Set to `production` for secure HTTPS-only cookies |
+| Variable       | Required | Description                                       |
+| -------------- | -------- | ------------------------------------------------- |
+| `DATABASE_URL` | Yes      | PostgreSQL connection string                      |
+| `CSRF_KEY`     | Yes      | 32-byte CSRF secret key                           |
+| `PORT`         | No       | Server port (default: 3000)                       |
+| `ENV`          | No       | Set to `production` for secure HTTPS-only cookies |
