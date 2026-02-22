@@ -2,70 +2,70 @@ INSERT INTO learn_content (category, title, content, video_url, sort_order) VALU
 (
   'Footwork',
   'Silent Feet',
-  '<p>Silent feet is a technique where you focus on placing your feet on holds as quietly as possible. The goal is to eliminate the "clunk" of shoes hitting the wall, forcing you to use precision and intention with every foot placement.</p><p>Practice by climbing routes you know well and concentrating entirely on foot placement. Look at the hold, place your foot deliberately, and keep the weight transfer smooth.</p>',
-  'https://www.youtube.com/watch?v=kFrUiGks5Dc',
+  '<p>Silent feet is a precision technique that requires eliminating all audible impact during foot placement. The absence of noise serves as a proxy for controlled velocity and deliberate placement — a "clunk" often causes micro-slips and triggers over-reliance on the upper body.</p><p>Key drills include the <strong>Penny Drill</strong> (place a coin on your toe box and climb without dislodging it) and <strong>Jingle Bells</strong> (attach bells to your laces for immediate acoustic feedback). The <strong>Sloth technique</strong> — climbing at an exaggeratedly slow pace — forces the core and glutes to maintain tension through every transition.</p><p>The goal is to move from conscious, deliberate placement to automated, subconscious mastery where precision is maintained even during high-velocity sequences.</p>',
+  'https://www.youtube.com/watch?v=MtFwOJieF28',
   1
 ),
 (
   'Footwork',
   'Smearing',
-  '<p>Smearing is the technique of using friction between your climbing shoe and the wall surface when there are no defined footholds. The rubber of your shoe sole creates enough friction to stand on if your weight is positioned correctly.</p><p>Key points: keep your heel low, push your weight into the wall, and trust your shoes.</p>',
-  'https://www.youtube.com/watch?v=sGXuAFiXHFI',
+  '<p>Smearing relies on the molecular interaction between climbing rubber and the wall surface when no defined footholds exist. The technical efficacy of a smear is governed by the coefficient of friction and the normal force applied perpendicular to the surface.</p><p>To maximize normal force, drop your heel to increase rubber contact area against the surface texture. A common error — <strong>lazy feet</strong> — is a failure to actively engage the lower leg and press through the ball of the foot. Successful smearing requires high calf tension combined with a relaxed, low-heel position.</p><p>Keep your hips close to the wall so the vector of force is directed into the surface rather than away from it. Hesitation during weight transfer often causes the rubber to transition from static to kinetic friction — experienced as a sudden slip.</p>',
+  'https://www.youtube.com/watch?v=4ueguHyu_2U',
   2
 ),
 (
   'Footwork',
   'Edging Technique',
-  '<p>Edging uses the edge of your climbing shoe — typically the inside or outside edge — to stand precisely on small footholds. Inside edging (big toe side) is most common and gives the most power. Outside edging (pinky toe side) is used for drop-knee moves and traverses.</p><p>Always keep your heel slightly raised and drive your weight through the edge of the shoe for maximum contact area on the hold.</p>',
-  NULL,
+  '<p>Edging uses the stiff edges of a climbing shoe to stand on discrete, often minute, features. The <strong>inside edge</strong> (medial, big-toe side) provides the most power and is the most common contact point. The <strong>outside edge</strong> (lateral, pinky-toe side) is used for drop-knees and traverses.</p><p>The "toe-in" position — foot perpendicular to the wall — offers maximum reach but demands more from the calf muscles. Edging provides more stability and is less fatiguing over long durations. Effective edging requires core tension to prevent the hips from sagging, which would alter the foot angle and break the mechanical lock between rubber and edge.</p><p>A critical habit to avoid: using the middle of the foot or arch, which eliminates the ability to pivot and severely limits your range of motion.</p>',
+  'https://www.youtube.com/watch?v=dRSWZ6KTow4',
   3
 ),
 (
   'Body Positioning',
   'Hip Rotation (Drop-Knee)',
-  '<p>The drop-knee (or Egyptian) is a technique where you turn your knee inward and downward, rotating your hip toward the wall. This allows you to reach farther with the opposite hand while keeping your center of gravity over your feet.</p><p>It is especially useful on overhanging terrain and for reducing the distance between your body and the holds above.</p>',
-  'https://www.youtube.com/watch?v=k5PtFhT_3w0',
+  '<p>The drop-knee (or Egyptian) is one of the most powerful techniques for overhanging terrain. By internally rotating the hip and pointing the knee downward, you pull your hips tight against the wall surface. This proximity reduces outward force on the hands — effectively making holds feel larger and more positive.</p><p>The technique is often paired with a straight-arm hang on the opposite side, creating a stable triangle of support that allows maximum reach with the leading hand. A successful drop-knee is felt primarily in the hips and core, not the knee itself.</p><p><strong>Safety note:</strong> Failure to pivot the foot on the hold before dropping the knee places excessive torque on the knee joint, particularly the medial collateral ligament (MCL). Always pivot first.</p>',
+  'https://www.youtube.com/watch?v=TFa7SWh5PGM',
   1
 ),
 (
   'Body Positioning',
   'Flagging',
-  '<p>Flagging is a technique where you extend one leg out to the side or behind you to counterbalance your body weight. It prevents you from barn-dooring (swinging away from the wall) when only one hand and one foot are on the same side.</p><p>Inside flag: leg crosses behind the weight-bearing foot. Outside flag: leg extends to the outside. Both keep your hips in and your center of gravity over your points of contact.</p>',
-  'https://www.youtube.com/watch?v=8JJSjFKFfxI',
+  '<p>Flagging is a counterbalance technique used when two points of contact are on the same side of your body, creating rotational torque that pulls the opposite side away from the wall. By extending the non-weight-bearing leg, you shift your center of gravity to counteract this torque (the "barn-door" effect).</p><p>There are three primary types: <strong>Outside flag</strong> — leg extended laterally to the side of the supporting foot; <strong>Inside flag</strong> — leg crossed behind the supporting leg and pressed against the wall; <strong>Back flag</strong> — leg extended behind the body toward the opposite side, critical on overhanging terrain.</p><p>The "Lazy Flag" — simply letting the leg dangle — provides minimal benefit. To be effective, the flagging limb must be engaged, often with the toe pressing toward the wall to create tension throughout the posterior chain. An <strong>Active Flag</strong> uses deliberate pressure against the wall to create a virtual foothold.</p>',
+  'https://www.youtube.com/watch?v=jLsii8s6acM',
   2
 ),
 (
   'Training Methods',
   'The 4x4 Workout',
-  '<p>The 4x4 is a classic power-endurance training method. Choose four boulder problems slightly below your max (around 60–70% effort). Climb all four back-to-back with minimal rest, then rest 3–4 minutes. Repeat for four rounds total.</p><p>This trains your body to maintain peak power output while fatigued — a critical skill for longer routes and competition climbing.</p>',
-  'https://www.youtube.com/watch?v=H0sNPWZ7e2Y',
+  '<p>The 4x4 is a cornerstone power-endurance protocol. Select four boulder problems approximately two grades below your maximum (roughly 60–70% intensity) and climb them back-to-back with minimal rest. Rest 3–5 minutes between sets and complete four sets total.</p><p>Unlike the "Norwegian 4x4" — a cardiovascular HIIT protocol — the climbing 4x4 specifically targets the glycolytic system and your ability to shuttle lactate while performing complex motor tasks. A critical element is maintaining <strong>movement resilience</strong>: the ability to execute perfect technique even when severely pumped.</p><p>If your form degrades significantly during the third or fourth problem, the intensity of your chosen problems is too high. The goal is controlled fatigue, not collapse.</p>',
+  'https://www.youtube.com/watch?v=OdevRNWoQmM',
   1
 ),
 (
   'Training Methods',
   'Hangboard Repeaters',
-  '<p>Repeaters build finger strength and endurance using a hangboard. The classic protocol: hang for 7 seconds, rest 3 seconds, repeat 6 times per set. Rest 2–3 minutes between sets. Use an edge size that allows you to complete all reps — typically 20mm for intermediate climbers.</p><p>Focus on keeping your fingers in a half-crimp or open-hand position and avoid fully locking the crimp to reduce injury risk.</p>',
-  'https://www.youtube.com/watch?v=oGMPsS4oeIs',
+  '<p>Finger strength is the most specific physical requirement for high-level climbing. The hangboard provides a controlled environment to stress the tendons and muscle-tendon junctions of the hand and forearm.</p><p>The classic <strong>7:3 Repeater Protocol</strong>: hang for 7 seconds, rest 3 seconds, repeat 6 times per set. Rest 2–3 minutes between sets. The short rest prevents full ATP replenishment, forcing the muscle to adapt to sustained loads. Use a 20mm edge and a load that allows you to complete all reps cleanly.</p><p><strong>Density Hangs</strong> (developed by Dr. Tyler Nelson) use longer hangs — 20–40 seconds at approximately 75% of maximum — to target remodeling of the collagen matrix within tendons, increasing stiffness and resilience against injury.</p><p>Always use the <strong>half-crimp or open-hand position</strong>. The full crimp places excessive stress on the finger pulleys. A thorough warm-up and avoidance of "dry-firing" (slipping suddenly off a small edge) are essential for long-term health.</p>',
+  'https://www.youtube.com/watch?v=vyhdpNGtF78',
   2
 ),
 (
   'Hold Types',
   'Crimps',
-  '<p>Crimps are small ledge holds that you grip with your fingers bent at the first knuckle. There are two main grip positions: full crimp (thumb wrapped over index finger — more power, higher injury risk) and half crimp (thumb not wrapped — safer for tendons).</p><p>Open-hand grip is the safest and should be trained regularly, even though it feels weaker initially. Strong open-hand grip is a hallmark of advanced climbers.</p>',
-  NULL,
+  '<p>Crimps are small, positive edges that allow the fingers to create leverage. The <strong>Full Crimp</strong> — thumb wrapped over the index finger — provides the most power but is the most dangerous for the finger pulleys due to extreme bowstringing forces. The <strong>Half Crimp</strong> is the preferred technical standard, providing high stability while distributing load more safely across the joints.</p><p>Biomechanical efficiency on crimps is partly determined by elbow position. A high elbow reduces the efficiency of the pull angle and increases dry-fire risk. Keep the elbow low and the body close to the wall for a more direct downward force.</p><p>Training the <strong>open-hand grip</strong> regularly builds long-term pulley health and is a hallmark of advanced climbers, even though it feels weaker initially.</p>',
+  'https://www.youtube.com/watch?v=HWhbBY9tKLI',
   1
 ),
 (
   'Hold Types',
   'Slopers',
-  '<p>Slopers are rounded holds with no defined edge. They rely entirely on friction and require you to keep your palm as flat as possible against the surface, fingers pointing downward. Your center of gravity must stay low and directly below the hold.</p><p>Slopers punish poor footwork and body positioning — if your hips are away from the wall, you will slip off. They are grip-strength intensive and are particularly common on slab and outdoor granite routes.</p>',
-  NULL,
+  '<p>Slopers are the most unforgiving holds in climbing — they provide no edge to grip. Success depends entirely on maximizing surface contact and maintaining a precise center of gravity. Pull perpendicular to the optimal friction surface; pulling away from the wall or at too shallow an angle will cause the hand to slide off instantly.</p><p><strong>Compression</strong>: using two hands to squeeze a sloper or volume creates inward oppositional force that increases friction. <strong>Vector alignment</strong>: your center of gravity must stay low and directly below the hold. <strong>Brushing</strong>: slopers are highly sensitive to ingrained chalk and sweat, which drastically reduces the friction coefficient — frequent brushing is mandatory.</p><p>Advanced technique involves "wrapping" the meat of the hand or even the wrist onto the hold to create more surface area and alternative vectors of force.</p>',
+  'https://www.youtube.com/watch?v=zlsa6pZ3SjY',
   2
 ),
 (
   'Mental Skills',
   'Route Reading',
-  '<p>Route reading is the practice of studying a route from the ground before you climb it. Look at the holds, identify likely rest positions, think through sequences, and plan your feet before your hands.</p><p>Good route readers can visualize the entire climb before touching the wall. Practice by watching other climbers, projecting each move mentally, and comparing your plan to what actually happens on the wall.</p>',
-  'https://www.youtube.com/watch?v=hLGiHjHY7GI',
+  '<p>Route reading is the practice of pre-programming your motor responses from the ground, reducing cognitive load while on the wall. Expert climbers like Adam Ondra are known for intense visualisation — mimicking movements from the ground ("grabbing the air") to build muscle memory and identify hand-foot sequences before they begin.</p><p>Effective route reading involves two complementary scans: a <strong>ground-up scan</strong> to identify every hold from start to finish, and a <strong>top-down scan</strong> to reveal awkward positions or hidden holds not visible from below. Identify cruxes, plan rest positions, and look for "shake-out" spots where one hand can recover.</p><p>For visually impaired climbers, tactile techniques like the <strong>Lego protocol</strong> — building a 3D map of the route using Lego bricks — demonstrate that climbing is fundamentally a cognitive puzzle: once the sequence is understood, the physical execution follows a pre-determined map.</p>',
+  'https://www.youtube.com/watch?v=wZ7Fkxcoc0k',
   1
 );
