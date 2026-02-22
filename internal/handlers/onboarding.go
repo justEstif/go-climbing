@@ -89,6 +89,6 @@ func OnboardingSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("HX-Redirect", "/")
+	w.Header().Set("HX-Redirect", "/sessions")
 	w.WriteHeader(http.StatusOK)
 }

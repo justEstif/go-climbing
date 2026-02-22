@@ -65,6 +65,10 @@ func main() {
 				r.Get("/onboarding", handlers.OnboardingForm)
 				r.Post("/onboarding", handlers.OnboardingSubmit)
 			})
+			r.Get("/sessions", handlers.SessionsPage)
+			r.Get("/sessions/log", handlers.LogForm)
+			r.Post("/sessions/log", handlers.LogSubmit)
+			r.Get("/sessions/{id}", handlers.SessionDetail)
 		})
 	})
 

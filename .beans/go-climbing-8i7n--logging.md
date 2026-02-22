@@ -1,11 +1,11 @@
 ---
 # go-climbing-8i7n
 title: logging
-status: draft
+status: in-progress
 type: task
 priority: normal
 created_at: 2026-02-21T22:54:50Z
-updated_at: 2026-02-21T22:57:16Z
+updated_at: 2026-02-22T01:48:06Z
 blocked_by:
     - go-climbing-cxyd
 ---

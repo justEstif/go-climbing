@@ -209,3 +209,24 @@ func MarshalWeaknesses(weaknesses []string) ([]byte, error) {
 	}
 	return json.Marshal(weaknesses)
 }
+
+type LoggedRoute struct {
+	Grade int    `json:"grade"`
+	Style string `json:"style"`
+	Count int    `json:"count"`
+}
+
+func EncodeRoutesLogged(routes []LoggedRoute) ([]byte, error) {
+	if len(routes) == 0 {
+		return []byte("[]"), nil
+	}
+	return json.Marshal(routes)
+}
+
+func DecodeRoutesLogged(data []byte) ([]LoggedRoute, error) {
+	var routes []LoggedRoute
+	if err := json.Unmarshal(data, &routes); err != nil {
+		return nil, err
+	}
+	return routes, nil
+}

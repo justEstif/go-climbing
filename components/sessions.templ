@@ -1,0 +1,87 @@
+package components
+
+import (
+	"strconv"
+	"github.com/justestif/go-climbing/internal/database"
+	climbsession "github.com/justestif/go-climbing/internal/session"
+)
+
+templ SessionsDashboard(user database.User, todaySessions []database.Session, pastSessions []database.Session, loggedIDs map[int32]bool) {
+	@Layout("Sessions") {
+		<h1>Sessions</h1>
+		<section class="box">
+			<strong>Current grade:</strong> { gradeName(int(user.CurrentMaxGrade)) }
+			&nbsp;|&nbsp;
+			<strong>Goal:</strong> { gradeName(int(user.GoalGrade)) }
+			&nbsp;|&nbsp;
+			<strong>Sessions/week:</strong> { strconv.Itoa(int(user.SessionsPerWeek)) }
+		</section>
+		<h2>Today</h2>
+		if len(todaySessions) == 0 {
+			<p>No sessions scheduled for today.</p>
+		} else {
+			<ul>
+				for _, s := range todaySessions {
+					<li>
+						<a href={ templ.SafeURL("/sessions/" + strconv.Itoa(int(s.ID))) }>
+							Session #{ strconv.Itoa(int(s.SessionNumber)) } &mdash; { s.FocusType }
+						</a>
+						if loggedIDs[s.ID] {
+							<span class="chip ok">Logged</span>
+						}
+					</li>
+				}
+			</ul>
+		}
+		if len(pastSessions) > 0 {
+			<h2>Past</h2>
+			<ul>
+				for _, s := range pastSessions {
+					<li>
+						<a href={ templ.SafeURL("/sessions/" + strconv.Itoa(int(s.ID))) }>
+							{ s.Date.Time.Format("2006-01-02") } &mdash; Session #{ strconv.Itoa(int(s.SessionNumber)) } &mdash; { s.FocusType }
+						</a>
+						if loggedIDs[s.ID] {
+							<span class="chip ok">Logged</span>
+						}
+					</li>
+				}
+			</ul>
+		}
+	}
+}
+
+templ SessionDetail(session database.Session, plan *climbsession.SessionPlan, existingLog *database.SessionLog) {
+	@Layout("Session Detail") {
+		<p><a href="/sessions">&larr; All sessions</a></p>
+		<h1>Session #{ strconv.Itoa(int(session.SessionNumber)) } &mdash; { session.FocusType }</h1>
+		<p><strong>Date:</strong> { session.Date.Time.Format("2006-01-02") }</p>
+		if plan != nil {
+			@SessionCard(session, *plan)
+		}
+		if existingLog != nil {
+			<section class="box">
+				<h2>Log summary</h2>
+				if existingLog.EnergyLevel.Valid {
+					<p><strong>Energy:</strong> { strconv.Itoa(int(existingLog.EnergyLevel.Int32)) }/5</p>
+				}
+				if existingLog.Soreness.Valid {
+					<p><strong>Soreness:</strong> { strconv.Itoa(int(existingLog.Soreness.Int32)) }/5</p>
+				}
+				if existingLog.SkinCondition.Valid {
+					<p><strong>Skin:</strong> { existingLog.SkinCondition.String }</p>
+				}
+				if existingLog.Notes.Valid && existingLog.Notes.String != "" {
+					<p><strong>Notes:</strong> { existingLog.Notes.String }</p>
+				}
+			</section>
+			<p>
+				<a href={ templ.SafeURL("/sessions/log?session_id=" + strconv.Itoa(int(session.ID))) } class="btn">Update log &rarr;</a>
+			</p>
+		} else {
+			<p>
+				<a href={ templ.SafeURL("/sessions/log?session_id=" + strconv.Itoa(int(session.ID))) } class="ok btn">Log this session &rarr;</a>
+			</p>
+		}
+	}
+}

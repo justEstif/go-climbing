@@ -1,0 +1,121 @@
+package components
+
+import (
+	"github.com/justestif/go-climbing/internal/database"
+	"strconv"
+)
+
+templ LogForm(csrfToken string, session database.Session, existingLog *database.SessionLog) {
+	@Layout("Log Session") {
+		<h1>
+			if existingLog != nil {
+				Update log for Session #{ strconv.Itoa(int(session.SessionNumber)) }
+			} else {
+				Log Session #{ strconv.Itoa(int(session.SessionNumber)) }
+			}
+		</h1>
+		<form
+			hx-post="/sessions/log"
+			hx-target="#log-error"
+			hx-swap="innerHTML"
+		>
+			<input type="hidden" name="gorilla.csrf.Token" value={ csrfToken }/>
+			<input type="hidden" name="session_id" value={ strconv.Itoa(int(session.ID)) }/>
+			if existingLog != nil {
+				<input type="hidden" name="log_id" value={ strconv.Itoa(int(existingLog.ID)) }/>
+			}
+			<fieldset>
+				<legend>Routes climbed</legend>
+				for i := range 5 {
+					<div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.4rem;">
+						<label style="min-width:3rem">Route { strconv.Itoa(i + 1) }</label>
+						<select name="route_grade">
+							<option value="">— grade —</option>
+							for g := range 18 {
+								<option value={ gradeValue(g) }>{ gradeName(g) }</option>
+							}
+						</select>
+						<select name="route_style">
+							<option value="flash">Flash</option>
+							<option value="onsight">Onsight</option>
+							<option value="redpoint">Redpoint</option>
+							<option value="attempt">Attempt</option>
+						</select>
+						<input type="number" name="route_count" value="1" min="1" max="99" style="width:4rem" aria-label="Count"/>
+					</div>
+				}
+			</fieldset>
+			<fieldset>
+				<legend>How did you feel?</legend>
+				<label>
+					Energy level
+					<input
+						type="range"
+						name="energy_level"
+						min="1"
+						max="5"
+						value={ energyValue(existingLog, 3) }
+						oninput="document.getElementById('energy-label').textContent=this.value"
+					/>
+					<span id="energy-label">{ energyValue(existingLog, 3) }</span>/5
+				</label>
+				<label>
+					Soreness
+					<input
+						type="range"
+						name="soreness"
+						min="1"
+						max="5"
+						value={ sorenessValue(existingLog, 3) }
+						oninput="document.getElementById('soreness-label').textContent=this.value"
+					/>
+					<span id="soreness-label">{ sorenessValue(existingLog, 3) }</span>/5
+				</label>
+				<label>
+					Skin condition
+					<select name="skin_condition">
+						<option value="good" selected?={ skinSelected(existingLog, "good") }>Good</option>
+						<option value="ok" selected?={ skinSelected(existingLog, "ok") || existingLog == nil }>OK</option>
+						<option value="bad" selected?={ skinSelected(existingLog, "bad") }>Bad</option>
+						<option value="ripped" selected?={ skinSelected(existingLog, "ripped") }>Ripped</option>
+					</select>
+				</label>
+			</fieldset>
+			<fieldset>
+				<legend>Optional</legend>
+				<label>
+					New max grade?
+					<select name="new_max_grade">
+						<option value="">— no change —</option>
+						for g := range 18 {
+							<option value={ gradeValue(g) }>{ gradeName(g) }</option>
+						}
+					</select>
+				</label>
+				<label for="notes">
+					Notes
+				</label>
+				<textarea id="notes" name="notes" rows="3" placeholder="How did it go?">
+					if existingLog != nil && existingLog.Notes.Valid {
+						{ existingLog.Notes.String }
+					}
+				</textarea>
+			</fieldset>
+			<div id="log-error"></div>
+			<div>
+				<button type="submit" class="ok btn">
+					if existingLog != nil {
+						Update log
+					} else {
+						Save log
+					}
+				</button>
+			</div>
+			<a href={ templ.SafeURL("/sessions/" + strconv.Itoa(int(session.ID))) }>Cancel</a>
+		</form>
+	}
+}
+
+templ LogError(msg string) {
+	<p class="bad">{ msg }</p>
+}
