@@ -38,6 +38,17 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// RequireNoAuth redirects authenticated users away from guest-only pages (e.g. login, signup)
+func RequireNoAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if SessionManager.GetInt(r.Context(), "userID") != 0 {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 // RequireAuth is a middleware that ensures the user is authenticated
 func RequireAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

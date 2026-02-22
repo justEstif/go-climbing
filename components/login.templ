@@ -45,10 +45,6 @@ templ Login(csrfToken string) {
 	}
 }
 
-templ LoginSuccess() {
-	<div class="ok box">Logged in successfully!</div>
-}
-
 templ LoginError(message string) {
 	<div class="bad box">{ message }</div>
 }

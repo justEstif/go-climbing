@@ -51,10 +51,13 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Use(csrfMw)
 		r.Get("/", handlers.Home)
-		r.Get("/signup", handlers.SignupForm)
-		r.Post("/signup", handlers.SignupSubmit)
-		r.Get("/login", handlers.LoginForm)
-		r.Post("/login", handlers.LoginSubmit)
+		r.Group(func(r chi.Router) {
+			r.Use(customMiddleware.RequireNoAuth)
+			r.Get("/signup", handlers.SignupForm)
+			r.Post("/signup", handlers.SignupSubmit)
+			r.Get("/login", handlers.LoginForm)
+			r.Post("/login", handlers.LoginSubmit)
+		})
 	})
 
 	// Logout route (no CSRF needed for logout)

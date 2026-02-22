@@ -52,5 +52,6 @@ func LoginSubmit(w http.ResponseWriter, r *http.Request) {
 	// Store user ID in session
 	middleware.SessionManager.Put(r.Context(), "userID", int(user.ID))
 
-	components.LoginSuccess().Render(r.Context(), w)
+	w.Header().Set("HX-Redirect", "/")
+	w.WriteHeader(http.StatusOK)
 }
