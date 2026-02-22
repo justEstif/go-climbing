@@ -5,4 +5,4 @@ echo "-----> Installing templ"
 go install github.com/a-h/templ/cmd/templ@latest
 
 echo "-----> Generating templ files"
-templ generate
+"$(go env GOPATH)/bin/templ" generate
