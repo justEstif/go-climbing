@@ -1,0 +1,64 @@
+package components
+
+templ Onboarding(csrfToken string) {
+	@Layout("Set Up Your Profile") {
+		<h1>Set Up Your Profile</h1>
+		<p>Tell us about your climbing so we can build a personalized session plan.</p>
+		<form
+			hx-post="/onboarding"
+			hx-target="#form-result"
+			hx-swap="innerHTML"
+			class="table rows"
+		>
+			<input type="hidden" name="gorilla.csrf.Token" value={ csrfToken }/>
+			<div>
+				<label for="current_max_grade">
+					<span>Current max grade</span>
+				</label>
+				<select id="current_max_grade" name="current_max_grade" required>
+					for i := 0; i <= 17; i++ {
+						<option value={ gradeValue(i) }>{ gradeName(i) }</option>
+					}
+				</select>
+			</div>
+			<div>
+				<label for="goal_grade">
+					<span>Goal grade</span>
+				</label>
+				<select id="goal_grade" name="goal_grade" required>
+					for i := 0; i <= 17; i++ {
+						<option value={ gradeValue(i) }>{ gradeName(i) }</option>
+					}
+				</select>
+			</div>
+			<div>
+				<label for="sessions_per_week">
+					<span>Sessions per week</span>
+				</label>
+				<select id="sessions_per_week" name="sessions_per_week" required>
+					for i := 1; i <= 7; i++ {
+						<option value={ gradeValue(i) }>{ gradeValue(i) }</option>
+					}
+				</select>
+			</div>
+			<div>
+				<label>
+					<span>Weaknesses (select all that apply)</span>
+				</label>
+				<div>
+					<label><input type="checkbox" name="weaknesses" value="footwork"/> Footwork</label>
+					<label><input type="checkbox" name="weaknesses" value="power"/> Power</label>
+					<label><input type="checkbox" name="weaknesses" value="endurance"/> Endurance</label>
+					<label><input type="checkbox" name="weaknesses" value="technique"/> Technique</label>
+					<label><input type="checkbox" name="weaknesses" value="mental"/> Mental game</label>
+				</div>
+			</div>
+			<button type="submit" class="ok">Generate My First Session</button>
+		</form>
+		<div id="form-result"></div>
+	}
+}
+
+templ OnboardingError(message string) {
+	<div class="bad box">{ message }</div>
+}

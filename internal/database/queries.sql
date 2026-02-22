@@ -26,6 +26,11 @@ WHERE id = $7;
 DELETE FROM users
 WHERE id = $1;
 
+-- name: UpdateUserProfile :exec
+UPDATE users
+SET current_max_grade = $1, goal_grade = $2, sessions_per_week = $3, weaknesses = $4
+WHERE id = $5;
+
 -- Session Queries
 
 -- name: GetSession :one
@@ -50,6 +55,12 @@ WHERE id = $7;
 -- name: DeleteSession :exec
 DELETE FROM sessions
 WHERE id = $1;
+
+-- name: GetLatestSessionByUser :one
+SELECT * FROM sessions
+WHERE user_id = $1
+ORDER BY date DESC, session_number DESC
+LIMIT 1;
 
 -- Session Log Queries
 

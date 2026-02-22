@@ -71,5 +71,6 @@ func SignupSubmit(w http.ResponseWriter, r *http.Request) {
 	// Store user ID in session to automatically log them in
 	middleware.SessionManager.Put(r.Context(), "userID", int(user.ID))
 
-	components.SignupSuccess().Render(r.Context(), w)
+	w.Header().Set("HX-Redirect", "/onboarding")
+	w.WriteHeader(http.StatusOK)
 }

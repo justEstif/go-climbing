@@ -58,6 +58,14 @@ func main() {
 			r.Get("/login", handlers.LoginForm)
 			r.Post("/login", handlers.LoginSubmit)
 		})
+		r.Group(func(r chi.Router) {
+			r.Use(customMiddleware.RequireAuth)
+			r.Group(func(r chi.Router) {
+				r.Use(customMiddleware.RequireOnboarding)
+				r.Get("/onboarding", handlers.OnboardingForm)
+				r.Post("/onboarding", handlers.OnboardingSubmit)
+			})
+		})
 	})
 
 	// Logout route (no CSRF needed for logout)

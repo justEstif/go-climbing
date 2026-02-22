@@ -10,6 +10,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/justestif/go-climbing/components"
+	"github.com/justestif/go-climbing/internal/database"
 )
 
 var SessionManager *scs.SessionManager
@@ -42,6 +43,24 @@ func AuthMiddleware(next http.Handler) http.Handler {
 func RequireNoAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if SessionManager.GetInt(r.Context(), "userID") != 0 {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// RequireOnboarding redirects already-onboarded users away from /onboarding.
+// Must be placed after RequireAuth in the middleware chain.
+func RequireOnboarding(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userID := SessionManager.GetInt(r.Context(), "userID")
+		user, err := database.DB.GetUser(r.Context(), int32(userID))
+		if err != nil {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+		if user.SessionsPerWeek != 0 {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}

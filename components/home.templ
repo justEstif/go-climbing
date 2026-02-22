@@ -1,8 +1,65 @@
 package components
 
-templ Home() {
-	@Layout("Home") {
-		<h1>Hello, World!</h1>
-		<p>Welcome to your new Go web application built with Chi, Templ, and HTMX.</p>
+import (
+	"strconv"
+	"github.com/justestif/go-climbing/internal/database"
+	climbsession "github.com/justestif/go-climbing/internal/session"
+)
+
+templ HomeLanding() {
+	@Layout("Go Climbing") {
+		<h1>Train smarter. Climb harder.</h1>
+		<p>Personalized bouldering sessions based on your level and goals.</p>
+		<a href="/signup" class="ok btn">Get started</a>
+		<a href="/login">Log in</a>
 	}
+}
+
+templ HomeDashboard(user database.User, session *database.Session, plan *climbsession.SessionPlan) {
+	@Layout("Today's Session") {
+		<h1>Today's Session</h1>
+		<section class="box">
+			<strong>Current grade:</strong> { gradeName(int(user.CurrentMaxGrade)) }
+			&nbsp;|&nbsp;
+			<strong>Goal:</strong> { gradeName(int(user.GoalGrade)) }
+			&nbsp;|&nbsp;
+			<strong>Sessions/week:</strong> { strconv.Itoa(int(user.SessionsPerWeek)) }
+		</section>
+		if session != nil && plan != nil {
+			@SessionCard(*session, *plan)
+		} else {
+			<p>No session scheduled yet.</p>
+		}
+	}
+}
+
+templ SessionCard(session database.Session, plan climbsession.SessionPlan) {
+	<article class="box">
+		<h2>Session #{ strconv.Itoa(int(session.SessionNumber)) } &mdash; Focus: { session.FocusType }</h2>
+		@WorkoutList("Warmup", plan.Warmup)
+		@WorkoutList("Main", plan.Main)
+		@WorkoutList("Project", plan.Project)
+	</article>
+}
+
+templ WorkoutList(label string, sets []climbsession.WorkoutSet) {
+	<section>
+		<h3>{ label }</h3>
+		<ul>
+			for _, s := range sets {
+				<li>
+					<strong>{ s.Name }</strong> &mdash; { s.Description }
+					if s.GradeRange != "" {
+						<span class="chip">{ s.GradeRange }</span>
+					}
+					if s.Sets != "" {
+						<span class="chip">{ s.Sets }</span>
+					}
+					if s.Duration != "" {
+						<span class="chip">{ s.Duration }</span>
+					}
+				</li>
+			}
+		</ul>
+	</section>
 }

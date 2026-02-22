@@ -208,6 +208,30 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return err
 }
 
+const getLatestSessionByUser = `-- name: GetLatestSessionByUser :one
+SELECT id, user_id, session_number, date, focus_type, planned_warmup, planned_main, planned_project, created_at FROM sessions
+WHERE user_id = $1
+ORDER BY date DESC, session_number DESC
+LIMIT 1
+`
+
+func (q *Queries) GetLatestSessionByUser(ctx context.Context, userID pgtype.Int4) (Session, error) {
+	row := q.db.QueryRow(ctx, getLatestSessionByUser, userID)
+	var i Session
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.SessionNumber,
+		&i.Date,
+		&i.FocusType,
+		&i.PlannedWarmup,
+		&i.PlannedMain,
+		&i.PlannedProject,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getLearnContent = `-- name: GetLearnContent :one
 
 SELECT id, category, title, content, video_url, sort_order FROM learn_content
@@ -636,6 +660,31 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
 	_, err := q.db.Exec(ctx, updateUser,
 		arg.Email,
 		arg.PasswordHash,
+		arg.CurrentMaxGrade,
+		arg.GoalGrade,
+		arg.SessionsPerWeek,
+		arg.Weaknesses,
+		arg.ID,
+	)
+	return err
+}
+
+const updateUserProfile = `-- name: UpdateUserProfile :exec
+UPDATE users
+SET current_max_grade = $1, goal_grade = $2, sessions_per_week = $3, weaknesses = $4
+WHERE id = $5
+`
+
+type UpdateUserProfileParams struct {
+	CurrentMaxGrade int32  `json:"current_max_grade"`
+	GoalGrade       int32  `json:"goal_grade"`
+	SessionsPerWeek int32  `json:"sessions_per_week"`
+	Weaknesses      []byte `json:"weaknesses"`
+	ID              int32  `json:"id"`
+}
+
+func (q *Queries) UpdateUserProfile(ctx context.Context, arg UpdateUserProfileParams) error {
+	_, err := q.db.Exec(ctx, updateUserProfile,
 		arg.CurrentMaxGrade,
 		arg.GoalGrade,
 		arg.SessionsPerWeek,

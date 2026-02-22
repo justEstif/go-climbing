@@ -52,3 +52,9 @@ type User struct {
 	Weaknesses      []byte           `json:"weaknesses"`
 	CreatedAt       pgtype.Timestamp `json:"created_at"`
 }
+
+type WebSession struct {
+	Token  string             `json:"token"`
+	Data   []byte             `json:"data"`
+	Expiry pgtype.Timestamptz `json:"expiry"`
+}
