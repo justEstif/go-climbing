@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
+GOBIN="/tmp/gobin"
+mkdir -p "$GOBIN"
+
 echo "-----> Installing templ"
-go install github.com/a-h/templ/cmd/templ@latest
+GOBIN="$GOBIN" go install github.com/a-h/templ/cmd/templ@latest
 
 echo "-----> Generating templ files"
-"$(go env GOPATH)/bin/templ" generate
+"$GOBIN/templ" generate
