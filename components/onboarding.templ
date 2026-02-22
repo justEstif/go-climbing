@@ -41,17 +41,15 @@ templ Onboarding(csrfToken string) {
 					}
 				</select>
 			</div>
-			<div>
-				<label>
-					<span>Weaknesses (select all that apply)</span>
-				</label>
-				<div>
-					<label><input type="checkbox" name="weaknesses" value="footwork"/> Footwork</label>
-					<label><input type="checkbox" name="weaknesses" value="power"/> Power</label>
-					<label><input type="checkbox" name="weaknesses" value="endurance"/> Endurance</label>
-					<label><input type="checkbox" name="weaknesses" value="technique"/> Technique</label>
-					<label><input type="checkbox" name="weaknesses" value="mental"/> Mental game</label>
-				</div>
+			<div class="flex-switch">
+				<fieldset class="flex-column">
+					<legend>Weaknesses (select all that apply)</legend>
+					<label><input type="checkbox" role="switch" name="weaknesses" value="footwork"/> Footwork</label>
+					<label><input type="checkbox" role="switch" name="weaknesses" value="power"/> Power</label>
+					<label><input type="checkbox" role="switch" name="weaknesses" value="endurance"/> Endurance</label>
+					<label><input type="checkbox" role="switch" name="weaknesses" value="technique"/> Technique</label>
+					<label><input type="checkbox" role="switch" name="weaknesses" value="mental"/> Mental game</label>
+				</fieldset>
 			</div>
 			<button type="submit" class="ok">Generate My First Session</button>
 		</form>
