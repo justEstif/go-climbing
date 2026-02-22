@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/justestif/go-climbing/components"
@@ -22,8 +23,9 @@ type WellnessPoint struct {
 }
 
 type SessionFrequencyPoint struct {
-	Date  string `json:"x"`
-	Count int    `json:"v"`
+	Date      string `json:"x"`
+	DayOfWeek int    `json:"y"`
+	Count     int    `json:"v"`
 }
 
 func ProgressPage(w http.ResponseWriter, r *http.Request) {
@@ -79,9 +81,16 @@ func ProgressPage(w http.ResponseWriter, r *http.Request) {
 
 	frequencyPoints := make([]SessionFrequencyPoint, 0, len(sessionCounts))
 	for date, count := range sessionCounts {
+		t, _ := time.Parse("2006-01-02", date)
+		// Convert Go weekday (0=Sun..6=Sat) to ISO weekday (1=Mon..7=Sun)
+		w := int(t.Weekday())
+		if w == 0 {
+			w = 7
+		}
 		frequencyPoints = append(frequencyPoints, SessionFrequencyPoint{
-			Date:  date,
-			Count: count,
+			Date:      date,
+			DayOfWeek: w,
+			Count:     count,
 		})
 	}
 

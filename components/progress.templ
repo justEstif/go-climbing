@@ -28,6 +28,7 @@ templ ProgressPage(stats ProgressStats, gradeJSON string, wellnessJSON string, f
 					<p>No sessions logged yet. Head to <a href="/sessions">Sessions</a> to log your first session.</p>
 				</section>
 			} else {
+				<div id="chart-data" data-grade={ gradeJSON } data-wellness={ wellnessJSON } data-frequency={ frequencyJSON } hidden></div>
 				<section class="box">
 					<h2>Grade Progression</h2>
 					<canvas id="gradeChart" height="120"></canvas>
@@ -46,9 +47,10 @@ templ ProgressPage(stats ProgressStats, gradeJSON string, wellnessJSON string, f
 		<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@2/dist/chartjs-chart-matrix.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 		<script>
-			var gradeData = @templ.Raw(gradeJSON);
-			var wellnessData = @templ.Raw(wellnessJSON);
-			var frequencyData = @templ.Raw(frequencyJSON);
+			var _cd = document.getElementById('chart-data');
+			var gradeData = _cd ? JSON.parse(_cd.dataset.grade) : [];
+			var wellnessData = _cd ? JSON.parse(_cd.dataset.wellness) : [];
+			var frequencyData = _cd ? JSON.parse(_cd.dataset.frequency) : [];
 
 			if (gradeData.length > 0) {
 				var gradeCtx = document.getElementById('gradeChart').getContext('2d');
@@ -143,20 +145,17 @@ templ ProgressPage(stats ProgressStats, gradeJSON string, wellnessJSON string, f
 								grid: { display: false },
 							},
 							y: {
-								type: 'time',
-								time: {
-									unit: 'day',
-									isoWeekday: 1,
-								},
+								type: 'linear',
+								min: 1,
+								max: 7,
 								offset: true,
 								ticks: {
 									callback: function(value) {
 										var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 										return days[value - 1] || '';
 									},
+									stepSize: 1,
 									maxRotation: 0,
-									autoSkip: true,
-									maxTicksLimit: 7,
 								},
 								grid: { display: false },
 								reverse: true,
