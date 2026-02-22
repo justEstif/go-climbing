@@ -1,11 +1,11 @@
 ---
 # go-climbing-rbkl
 title: auth + db setup
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-02-21T22:49:09Z
-updated_at: 2026-02-21T23:00:40Z
+updated_at: 2026-02-22T00:13:10Z
 ---
 
 ## Subtasks
