@@ -1,0 +1,106 @@
+package components
+
+import "strconv"
+
+templ ProgressPage(stats ProgressStats, gradeJSON string, wellnessJSON string) {
+	@Layout("Progress") {
+		<main>
+			<h1>Your Progress</h1>
+			<section class="box">
+				<h2>Overview</h2>
+				<dl>
+					<dt>Sessions Logged</dt>
+					<dd>{ strconv.Itoa(stats.TotalLogged) }</dd>
+					<dt>Current Max Grade</dt>
+					<dd>{ gradeName(int(stats.CurrentGrade)) }</dd>
+					<dt>Goal Grade</dt>
+					<dd>{ gradeName(int(stats.GoalGrade)) }</dd>
+				</dl>
+			</section>
+			if stats.TotalLogged == 0 {
+				<section class="box">
+					<p>No sessions logged yet. Head to <a href="/sessions">Sessions</a> to log your first session.</p>
+				</section>
+			} else {
+				<section class="box">
+					<h2>Grade Progression</h2>
+					<canvas id="gradeChart" height="120"></canvas>
+				</section>
+				<section class="box">
+					<h2>Wellness Tracking</h2>
+					<canvas id="wellnessChart" height="120"></canvas>
+				</section>
+			}
+		</main>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+		<script>
+			var gradeData = @templ.Raw(gradeJSON);
+			var wellnessData = @templ.Raw(wellnessJSON);
+
+			if (gradeData.length > 0) {
+				var gradeCtx = document.getElementById('gradeChart').getContext('2d');
+				new Chart(gradeCtx, {
+					type: 'line',
+					data: {
+						datasets: [{
+							label: 'Max Grade',
+							data: gradeData,
+							borderColor: '#4a90d9',
+							backgroundColor: 'rgba(74,144,217,0.1)',
+							tension: 0.3,
+							fill: true,
+						}]
+					},
+					options: {
+						parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+						scales: {
+							x: { type: 'category' },
+							y: {
+								min: 0,
+								max: 17,
+								ticks: {
+									callback: function(value) { return 'V' + value; },
+									stepSize: 1
+								}
+							}
+						},
+						plugins: { legend: { display: false } }
+					}
+				});
+			}
+
+			if (wellnessData.length > 0) {
+				var wellnessCtx = document.getElementById('wellnessChart').getContext('2d');
+				new Chart(wellnessCtx, {
+					type: 'line',
+					data: {
+						labels: wellnessData.map(function(d) { return d.date; }),
+						datasets: [
+							{
+								label: 'Energy',
+								data: wellnessData.map(function(d) { return d.energy; }),
+								borderColor: '#2e7d32',
+								backgroundColor: 'rgba(46,125,50,0.1)',
+								tension: 0.3,
+								spanGaps: true,
+							},
+							{
+								label: 'Soreness',
+								data: wellnessData.map(function(d) { return d.soreness; }),
+								borderColor: '#c62828',
+								backgroundColor: 'rgba(198,40,40,0.1)',
+								tension: 0.3,
+								spanGaps: true,
+							}
+						]
+					},
+					options: {
+						scales: {
+							y: { min: 1, max: 5, ticks: { stepSize: 1 } }
+						}
+					}
+				});
+			}
+		</script>
+	}
+}

@@ -6,6 +6,9 @@ templ Navbar() {
 			<ul role="list">
 				<li><a href="/">Home</a></li>
 				if GetIsSignedIn(ctx) {
+					<li><a href="/sessions">Sessions</a></li>
+					<li><a href="/progress">Progress</a></li>
+					<li><a href="/learn">Learn</a></li>
 					<li>
 						<form action="/logout" method="POST">
 							<button type="submit" class="btn btn-sm">Logout</button>

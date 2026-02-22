@@ -69,6 +69,9 @@ func main() {
 			r.Get("/sessions/log", handlers.LogForm)
 			r.Post("/sessions/log", handlers.LogSubmit)
 			r.Get("/sessions/{id}", handlers.SessionDetail)
+			r.Get("/progress", handlers.ProgressPage)
+			r.Get("/learn", handlers.LearnListPage)
+			r.Get("/learn/{id}", handlers.LearnDetailPage)
 		})
 	})
 

@@ -1,0 +1,56 @@
+package components
+
+import (
+	"strconv"
+	"github.com/justestif/go-climbing/internal/database"
+)
+
+templ LearnList(groups []LearnCategory) {
+	@Layout("Learn") {
+		<main>
+			<h1>Learn</h1>
+			if len(groups) == 0 {
+				<p>No content available yet.</p>
+			}
+			for _, group := range groups {
+				<section class="box">
+					<h2>{ group.Name }</h2>
+					<ul>
+						for _, item := range group.Items {
+							<li>
+								<a href={ templ.SafeURL("/learn/" + strconv.Itoa(int(item.ID))) }>
+									{ item.Title }
+								</a>
+								if item.VideoUrl.Valid {
+									<span class="chip">Video</span>
+								}
+							</li>
+						}
+					</ul>
+				</section>
+			}
+		</main>
+	}
+}
+
+templ LearnDetail(item database.LearnContent) {
+	@Layout(item.Title) {
+		<main>
+			<p><a href="/learn">&larr; All topics</a></p>
+			<h1>{ item.Title }</h1>
+			<p class="chip">{ item.Category }</p>
+			<div>
+				@templ.Raw(item.Content)
+			</div>
+			if item.VideoUrl.Valid {
+				<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-top:1.5rem;">
+					<iframe
+						src={ toEmbedURL(item.VideoUrl.String) }
+						style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
+						allowfullscreen
+					></iframe>
+				</div>
+			}
+		</main>
+	}
+}

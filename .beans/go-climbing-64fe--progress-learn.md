@@ -1,11 +1,11 @@
 ---
 # go-climbing-64fe
 title: progress + learn
-status: draft
+status: in-progress
 type: task
 priority: normal
 created_at: 2026-02-21T22:50:59Z
-updated_at: 2026-02-21T22:57:17Z
+updated_at: 2026-02-22T02:06:27Z
 blocked_by:
     - go-climbing-8i7n
 ---
