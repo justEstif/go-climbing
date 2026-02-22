@@ -1,149 +1,84 @@
-# Go Web Template
+# Go Climbing
 
-Modern Go web application template with Chi, Templ, missing.css, and HTMX.
+A climbing training app to help climbers track progress, plan sessions, and level up their skills.
 
-## Features
+**Live:** http://go-climbing.estifanos.cc
 
-- **Chi** - Lightweight, idiomatic HTTP router
-- **Templ** - Type-safe Go templating
-- **missing.css** - Classless CSS framework
-- **HTMX** - Dynamic interactions without heavy JavaScript
-- **PostgreSQL** - Robust relational database
-- **sqlc** - Compile-time type-safe SQL
-- **golang-migrate** - Database migrations
-- **mise** - Unified tool and task management
+## What It Does
 
-## Prerequisites
+- **Onboarding** — set your current max grade, goal grade, sessions per week, and weaknesses
+- **Session planning** — AI-generated training plans based on your profile
+- **Session logging** — log completed sessions and track what you actually did
+- **Progress tracking** — visualize improvement over time
+- **Learn** — educational content on technique, training concepts, and injury prevention
 
-- [mise](https://mise.jdx.dev/) installed
-- [Docker](https://www.docker.com/) for PostgreSQL
+## Built With
 
-## Quick Start
+- **[Go](https://go.dev/)** — backend language
+- **[Chi](https://github.com/go-chi/chi)** — HTTP router
+- **[Templ](https://templ.guide/)** — type-safe HTML templating
+- **[HTMX](https://htmx.org/)** — dynamic interactions without heavy JavaScript
+- **[missing.css](https://missing.style/)** — classless CSS framework
+- **[PostgreSQL](https://www.postgresql.org/)** — database
+- **[sqlc](https://sqlc.dev/)** — compile-time type-safe SQL queries
+- **[golang-migrate](https://github.com/golang-migrate/migrate)** — database migrations
+- **[SCS](https://github.com/alexedwards/scs)** — session management
+- **[mise](https://mise.jdx.dev/)** — tool and task management
+- **[Dokku](https://dokku.com/)** — self-hosted deployment
 
-### 1. Clone with gonew
+## Local Development
+
+**Prerequisites:** [mise](https://mise.jdx.dev/), [Docker](https://www.docker.com/)
 
 ```bash
-gonew github.com/justestif/go-web-template github.com/yourname/myproject
-cd myproject
-```
-
-### 2. Install Tools
-
-```bash
+# Install tools
 mise install
-```
 
-This installs:
-- Go (latest)
-- Bun (latest)
-- templ (latest)
-- sqlc (latest)
-- golang-migrate (latest)
-- air (latest)
-
-### 3. Start PostgreSQL
-
-```bash
+# Start PostgreSQL
 docker-compose up -d
-```
 
-### 4. Setup Project
-
-```bash
+# Run migrations, generate templ + sqlc
 mise run setup
-```
 
-This will:
-- Install Node dependencies
-- Run database migrations
-- Generate templ components
-- Generate type-safe SQL code
-
-### 5. Start Development
-
-Open two terminal windows:
-
-**Terminal 1 - Watch for file changes (optional):**
-```bash
-mise run templ
-```
-
-**Terminal 2 - Go Server:**
-```bash
+# Start dev server with live reload
 mise run dev
 ```
-
-### 6. Visit Application
 
 Open [http://localhost:3000](http://localhost:3000)
 
 ## Available Tasks
 
-Run `mise tasks` to see all available tasks:
-
-- `mise run dev` - Start development server with live reload
-- `mise run templ` - Generate templ files
-- `mise run db-migrate` - Run database migrations
-- `mise run db-rollback` - Rollback last migration
-- `mise run sqlc` - Generate type-safe SQL code
-- `mise run setup` - Complete project setup
-- `mise run build` - Build production binary
+```bash
+mise run dev          # Start dev server with live reload
+mise run build        # Build production binary to bin/app
+mise run templ        # Regenerate templ components (after editing .templ files)
+mise run sqlc         # Regenerate type-safe SQL (after editing queries.sql)
+mise run db-migrate   # Apply pending migrations
+mise run db-rollback  # Roll back last migration
+mise run setup        # Full initial setup (migrations + templ + sqlc)
+```
 
 ## Project Structure
 
 ```
 .
-├── cmd/web/              # Application entry point
+├── cmd/web/              # Entry point (router, middleware, server)
 ├── internal/
 │   ├── handlers/        # HTTP handlers
-│   ├── middleware/      # Custom middleware
-│   └── database/        # Database queries & connection
-├── components/          # Templ templates
-├── migrations/          # Database migrations
-├── mise.toml           # Tool & task configuration
-└── docker-compose.yml  # PostgreSQL setup
+│   ├── middleware/       # Auth, session, CSRF middleware
+│   ├── database/         # sqlc-generated models and queries
+│   └── session/          # Session planning logic
+├── components/           # Templ templates
+├── migrations/           # SQL migration files
+├── mise.toml             # Tool & task configuration
+└── docker-compose.yml    # Local PostgreSQL
 ```
 
-## Development Notes
+## Environment Variables
 
-### missing.css
-
-Forms use Gorilla CSRF middleware:
-- Token field name: `gorilla.csrf.Token`
-- Access in templates: `csrf.Token(r)`
-- Automatically validated on POST/PUT/DELETE
-- Set `secure=true` in production (HTTPS only)
-
-### Database
-
-Sample migration creates a `users` table. See `internal/database/queries.sql` for example queries.
-
-## Production Deployment
-
-1. Set environment variables:
-   ```bash
-   export DATABASE_URL="postgres://..."
-   export CSRF_KEY="your-32-byte-secret-key"
-   export PORT="8080"
-   ```
-
-2. Update CSRF middleware to use `secure=true` in `cmd/web/main.go`
-
-3. Build production binary:
-   ```bash
-   mise run build
-   ```
-
-4. Run migrations:
-   ```bash
-   mise run db-migrate
-   ```
-
-5. Start server:
-   ```bash
-   ./bin/app
-   ```
-
-## License
-
-MIT
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `CSRF_KEY` | Yes | 32-byte CSRF secret key |
+| `PORT` | No | Server port (default: 3000) |
+| `ENV` | No | Set to `production` for secure HTTPS-only cookies |
