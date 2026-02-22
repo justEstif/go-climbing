@@ -2,7 +2,7 @@ package components
 
 import "strconv"
 
-templ ProgressPage(stats ProgressStats, gradeJSON string, wellnessJSON string) {
+templ ProgressPage(stats ProgressStats, gradeJSON string, wellnessJSON string, frequencyJSON string) {
 	@Layout("Progress") {
 		<main>
 			<h1>Your Progress</h1>
@@ -27,15 +27,22 @@ templ ProgressPage(stats ProgressStats, gradeJSON string, wellnessJSON string) {
 					<canvas id="gradeChart" height="120"></canvas>
 				</section>
 				<section class="box">
+					<h2>Session Frequency</h2>
+					<canvas id="frequencyChart" height="150"></canvas>
+				</section>
+				<section class="box">
 					<h2>Wellness Tracking</h2>
 					<canvas id="wellnessChart" height="120"></canvas>
 				</section>
 			}
 		</main>
 		<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@2/dist/chartjs-chart-matrix.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 		<script>
 			var gradeData = @templ.Raw(gradeJSON);
 			var wellnessData = @templ.Raw(wellnessJSON);
+			var frequencyData = @templ.Raw(frequencyJSON);
 
 			if (gradeData.length > 0) {
 				var gradeCtx = document.getElementById('gradeChart').getContext('2d');
@@ -49,6 +56,11 @@ templ ProgressPage(stats ProgressStats, gradeJSON string, wellnessJSON string) {
 							backgroundColor: 'rgba(74,144,217,0.1)',
 							tension: 0.3,
 							fill: true,
+							pointRadius: 5,
+							pointHoverRadius: 8,
+							pointBackgroundColor: '#4a90d9',
+							pointBorderColor: '#fff',
+							pointBorderWidth: 2,
 						}]
 					},
 					options: {
@@ -64,7 +76,99 @@ templ ProgressPage(stats ProgressStats, gradeJSON string, wellnessJSON string) {
 								}
 							}
 						},
-						plugins: { legend: { display: false } }
+						plugins: {
+							legend: { display: false },
+							tooltip: {
+								callbacks: {
+									label: function(context) {
+										return 'V' + context.parsed.y;
+									}
+								}
+							}
+						}
+					}
+				});
+			}
+
+			if (frequencyData.length > 0) {
+				var freqCtx = document.getElementById('frequencyChart').getContext('2d');
+				new Chart(freqCtx, {
+					type: 'matrix',
+					data: {
+						datasets: [{
+							label: 'Sessions',
+							data: frequencyData,
+							backgroundColor: function(context) {
+								var value = context.dataset.data[context.dataIndex].v;
+								if (!value) return 'rgba(0,0,0,0)';
+								var alpha = Math.min(value / 3, 1);
+								return 'rgba(34, 197, 94, ' + (0.2 + alpha * 0.8) + ')';
+							},
+							borderColor: function(context) {
+								var value = context.dataset.data[context.dataIndex].v;
+								return value ? 'rgba(34, 197, 94, 1)' : 'rgba(0,0,0,0)';
+							},
+							borderWidth: 1,
+							width: function(context) {
+								return (context.chart.chartArea || {}).width / 26 - 3;
+							},
+							height: function(context) {
+								return (context.chart.chartArea || {}).height / 7 - 3;
+							},
+						}]
+					},
+					options: {
+						scales: {
+							x: {
+								type: 'time',
+								time: {
+									unit: 'week',
+									round: 'week',
+									isoWeekday: 1,
+								},
+								min: (function() {
+									var d = new Date();
+									d.setDate(d.getDate() - 180);
+									return d.toISOString().split('T')[0];
+								})(),
+								max: new Date().toISOString().split('T')[0],
+								offset: true,
+								ticks: { display: false },
+								grid: { display: false },
+							},
+							y: {
+								type: 'time',
+								time: {
+									unit: 'day',
+									isoWeekday: 1,
+								},
+								offset: true,
+								ticks: {
+									callback: function(value) {
+										var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+										return days[value - 1] || '';
+									},
+									maxRotation: 0,
+									autoSkip: true,
+									maxTicksLimit: 7,
+								},
+								grid: { display: false },
+								reverse: true,
+							}
+						},
+						plugins: {
+							legend: { display: false },
+							tooltip: {
+								callbacks: {
+									title: function(context) {
+										return context[0].raw.v + ' session(s) on ' + context[0].label;
+									},
+									label: function(context) {
+										return '';
+									}
+								}
+							}
+						}
 					}
 				});
 			}

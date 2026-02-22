@@ -21,6 +21,11 @@ type WellnessPoint struct {
 	Soreness *int   `json:"soreness"`
 }
 
+type SessionFrequencyPoint struct {
+	Date  string `json:"x"`
+	Count int    `json:"v"`
+}
+
 func ProgressPage(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.SessionManager.GetInt(r.Context(), "userID")
 
@@ -44,9 +49,12 @@ func ProgressPage(w http.ResponseWriter, r *http.Request) {
 	// Reverse logs so oldest-first for chart display (DB returns DESC)
 	gradePoints := make([]GradePoint, 0)
 	wellnessPoints := make([]WellnessPoint, 0)
+	sessionCounts := make(map[string]int)
 	for i := len(logs) - 1; i >= 0; i-- {
 		log := logs[i]
 		date := log.LoggedAt.Time.Format("2006-01-02")
+
+		sessionCounts[date]++
 
 		if log.NewMaxGrade.Valid {
 			gradePoints = append(gradePoints, GradePoint{
@@ -69,6 +77,14 @@ func ProgressPage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	frequencyPoints := make([]SessionFrequencyPoint, 0, len(sessionCounts))
+	for date, count := range sessionCounts {
+		frequencyPoints = append(frequencyPoints, SessionFrequencyPoint{
+			Date:  date,
+			Count: count,
+		})
+	}
+
 	gradeJSON, err := json.Marshal(gradePoints)
 	if err != nil {
 		gradeJSON = []byte("[]")
@@ -77,6 +93,10 @@ func ProgressPage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		wellnessJSON = []byte("[]")
 	}
+	frequencyJSON, err := json.Marshal(frequencyPoints)
+	if err != nil {
+		frequencyJSON = []byte("[]")
+	}
 
-	components.ProgressPage(stats, string(gradeJSON), string(wellnessJSON)).Render(r.Context(), w)
+	components.ProgressPage(stats, string(gradeJSON), string(wellnessJSON), string(frequencyJSON)).Render(r.Context(), w)
 }
