@@ -9,6 +9,7 @@ import (
 	"github.com/alexedwards/scs/pgxstore"
 	"github.com/alexedwards/scs/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/justestif/go-climbing/components"
 )
 
 var SessionManager *scs.SessionManager
@@ -16,13 +17,25 @@ var SessionManager *scs.SessionManager
 // InitSessionManager initializes the SCS session manager with PostgreSQL storage
 func InitSessionManager(dbPool *pgxpool.Pool) {
 	SessionManager = scs.New()
-	SessionManager.Store = pgxstore.New(dbPool)
+	// Use web_sessions table to avoid conflict with climbing sessions table
+	SessionManager.Store = pgxstore.NewWithConfig(dbPool, pgxstore.Config{
+		TableName:       "web_sessions",
+		CleanUpInterval: 5 * time.Minute,
+	})
 	SessionManager.Lifetime = 24 * time.Hour * 7 // 7 days
 	SessionManager.Cookie.Name = "session_id"
 	SessionManager.Cookie.HttpOnly = true
 	SessionManager.Cookie.SameSite = http.SameSiteStrictMode
 	SessionManager.Cookie.Secure = os.Getenv("ENV") == "production"
 	SessionManager.Cookie.Persist = true
+}
+
+func AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		isSignedIn := SessionManager.GetInt(r.Context(), "userID") != 0
+		ctx := context.WithValue(r.Context(), components.IsSignedInKey, isSignedIn)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 // RequireAuth is a middleware that ensures the user is authenticated

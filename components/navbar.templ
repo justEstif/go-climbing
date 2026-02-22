@@ -5,8 +5,16 @@ templ Navbar() {
 		<a href="/" class="brand">MyApp</a>
 		<ul>
 			<li><a href="/">Home</a></li>
-			<li><a href="/signup">Sign Up</a></li>
-			<li><a href="/login">Log In</a></li>
+			if GetIsSignedIn(ctx) {
+				<li>
+					<form action="/logout" method="POST">
+						<button type="submit" class="btn btn-sm">Logout</button>
+					</form>
+				</li>
+			} else {
+				<li><a href="/signup">Sign Up</a></li>
+				<li><a href="/login">Log In</a></li>
+			}
 		</ul>
 	</nav>
 }

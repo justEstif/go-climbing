@@ -34,6 +34,9 @@ func main() {
 	// Session middleware - handles loading and saving session data
 	r.Use(customMiddleware.SessionManager.LoadAndSave)
 
+	// Auth middleware - sets isSignedIn in context for all requests
+	r.Use(customMiddleware.AuthMiddleware)
+
 	// CSRF protection - set secure=true in production
 	csrfKey := []byte(os.Getenv("CSRF_KEY"))
 	if len(csrfKey) != 32 {
