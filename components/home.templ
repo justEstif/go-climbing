@@ -34,11 +34,16 @@ templ HomeDashboard(user database.User, session *database.Session, plan *climbse
 }
 
 templ SessionCard(session database.Session, plan climbsession.SessionPlan) {
-	<article class="box">
+	<article>
 		<h2>Session #{ strconv.Itoa(int(session.SessionNumber)) } &mdash; Focus: { session.FocusType }</h2>
+		if session.FocusType == "deload" {
+			<p><em>Recovery session — reduced intensity, no project work.</em></p>
+		}
 		@WorkoutList("Warmup", plan.Warmup)
 		@WorkoutList("Main", plan.Main)
-		@WorkoutList("Project", plan.Project)
+		if len(plan.Project) > 0 {
+			@WorkoutList("Project", plan.Project)
+		}
 	</article>
 }
 

@@ -29,7 +29,7 @@ func SessionsPage(w http.ResponseWriter, r *http.Request) {
 
 	sessions, err := database.DB.ListSessionsByUser(r.Context(), pgtype.Int4{Int32: int32(userID), Valid: true})
 	if err != nil {
-		components.SessionsDashboard(user, nil, nil, nil).Render(r.Context(), w)
+		components.SessionsDashboard(user, nil, "", nil, nil).Render(r.Context(), w)
 		return
 	}
 
@@ -46,16 +46,35 @@ func SessionsPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	today := time.Now().Format("2006-01-02")
-	var todaySessions, pastSessions []database.Session
+
+	// Find the earliest upcoming date (today or future).
+	nextDate := ""
 	for _, s := range sessions {
-		if s.Date.Time.Format("2006-01-02") == today {
-			todaySessions = append(todaySessions, s)
+		d := s.Date.Time.Format("2006-01-02")
+		if d >= today && (nextDate == "" || d < nextDate) {
+			nextDate = d
+		}
+	}
+
+	// Format for display, e.g. "Feb 22, 2026".
+	nextDateLabel := ""
+	if nextDate != "" {
+		if t, err := time.Parse("2006-01-02", nextDate); err == nil {
+			nextDateLabel = t.Format("Jan 2, 2006")
+		}
+	}
+
+	var nextSessions, pastSessions []database.Session
+	for _, s := range sessions {
+		d := s.Date.Time.Format("2006-01-02")
+		if d >= today {
+			nextSessions = append(nextSessions, s)
 		} else {
 			pastSessions = append(pastSessions, s)
 		}
 	}
 
-	components.SessionsDashboard(user, todaySessions, pastSessions, loggedIDs).Render(r.Context(), w)
+	components.SessionsDashboard(user, nextSessions, nextDateLabel, pastSessions, loggedIDs).Render(r.Context(), w)
 }
 
 func SessionDetail(w http.ResponseWriter, r *http.Request) {

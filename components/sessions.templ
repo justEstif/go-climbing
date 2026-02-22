@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-templ SessionsDashboard(user database.User, todaySessions []database.Session, pastSessions []database.Session, loggedIDs map[int32]bool) {
+templ SessionsDashboard(user database.User, nextSessions []database.Session, nextDate string, pastSessions []database.Session, loggedIDs map[int32]bool) {
 	@Layout("Sessions") {
 		<h1>Sessions</h1>
 		<section class="box">
@@ -26,23 +26,25 @@ templ SessionsDashboard(user database.User, todaySessions []database.Session, pa
 				</div>
 			</dl>
 		</section>
-    // TODO Instead of today - I would prefer "next session" with the date
-		<h2>Today</h2>
-		if len(todaySessions) == 0 {
-			<p>No sessions scheduled for today.</p>
-		} else {
+		if len(nextSessions) > 0 {
+			<h2>Next session &mdash; { nextDate }</h2>
 			<ul>
-				for _, s := range todaySessions {
+				for _, s := range nextSessions {
 					<li>
 						<a href={ templ.SafeURL("/sessions/" + strconv.Itoa(int(s.ID))) }>
 							Session #{ strconv.Itoa(int(s.SessionNumber)) } &mdash; { s.FocusType }
 						</a>
+						if s.FocusType == "deload" {
+							<span class="chip warn">Deload week</span>
+						}
 						if loggedIDs[s.ID] {
 							<span class="chip ok">Logged</span>
 						}
 					</li>
 				}
 			</ul>
+		} else {
+			<p>No upcoming sessions scheduled.</p>
 		}
 		if len(pastSessions) > 0 {
 			<h2>Past</h2>
@@ -67,11 +69,16 @@ templ SessionDetail(session database.Session, plan *climbsession.SessionPlan, ex
 		<p><a href="/sessions">&larr; All sessions</a></p>
 		<h1>Session #{ strconv.Itoa(int(session.SessionNumber)) } &mdash; { session.FocusType }</h1>
 		<p><strong>Date:</strong> { session.Date.Time.Format("2006-01-02") }</p>
+		if session.FocusType == "deload" {
+			<div class="box">
+				<strong>Recovery week.</strong> It's been a while since your last session — this is a lighter session to ease back in. Focus on movement quality, not intensity.
+			</div>
+		}
 		if plan != nil {
 			@SessionCard(session, *plan)
 		}
 		if existingLog != nil {
-			<section class="box">
+			<section>
 				<h2>Log summary</h2>
 				if existingLog.EnergyLevel.Valid {
 					<p><strong>Energy:</strong> { strconv.Itoa(int(existingLog.EnergyLevel.Int32)) }/5</p>

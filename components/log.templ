@@ -49,6 +49,7 @@ templ LogForm(csrfToken string, session database.Session, existingLog *database.
 				<legend>How did you feel?</legend>
 				<label>
 					Energy level
+					<span id="energy-label">{ energyValue(existingLog, 3) }</span>/5
 					<input
 						type="range"
 						name="energy_level"
@@ -57,10 +58,10 @@ templ LogForm(csrfToken string, session database.Session, existingLog *database.
 						value={ energyValue(existingLog, 3) }
 						oninput="document.getElementById('energy-label').textContent=this.value"
 					/>
-					<span id="energy-label">{ energyValue(existingLog, 3) }</span>/5
 				</label>
 				<label>
 					Soreness
+					<span id="soreness-label">{ sorenessValue(existingLog, 3) }</span>/5
 					<input
 						type="range"
 						name="soreness"
@@ -69,7 +70,6 @@ templ LogForm(csrfToken string, session database.Session, existingLog *database.
 						value={ sorenessValue(existingLog, 3) }
 						oninput="document.getElementById('soreness-label').textContent=this.value"
 					/>
-					<span id="soreness-label">{ sorenessValue(existingLog, 3) }</span>/5
 				</label>
 				<label>
 					Skin condition

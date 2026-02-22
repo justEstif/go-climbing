@@ -175,6 +175,80 @@ func chooseFocusType(weaknesses []string) string {
 	}
 }
 
+func buildDeloadPlan(currentGrade int32) SessionPlan {
+	easyGrade := currentGrade - 3
+	if easyGrade < 0 {
+		easyGrade = 0
+	}
+
+	warmup := []WorkoutSet{
+		{Name: "Easy Traversals", Description: "Traverse on easy holds to gently reactivate fingers and shoulders.", GradeRange: fmt.Sprintf("V%d", easyGrade), Duration: "7 min"},
+		{Name: "Mobility Stretching", Description: "Hip flexor stretches, shoulder circles, and wrist rotations.", Duration: "5 min"},
+	}
+	main := []WorkoutSet{
+		{Name: "Easy Circuit", Description: "Climb routes well below your limit focusing on movement quality — quiet feet, straight arms, hip positioning.", GradeRange: fmt.Sprintf("V%d–V%d", easyGrade, currentGrade-1), Sets: "10–12 routes"},
+		{Name: "Technique Laps", Description: "Pick 2 easy routes and do 3 laps each with a specific movement cue: one for footwork, one for hip movement.", GradeRange: fmt.Sprintf("V%d", easyGrade), Sets: "6 laps total"},
+	}
+	return SessionPlan{Warmup: warmup, Main: main, Project: []WorkoutSet{}}
+}
+
+func GenerateNextSession(
+	userID, sessionNumber, currentGrade, goalGrade int32,
+	weaknesses []string,
+	lastSessionDate time.Time,
+	sessionsPerWeek int32,
+) (database.CreateSessionParams, error) {
+	daysSince := time.Since(lastSessionDate).Hours() / 24
+	isDeload := daysSince >= 7
+
+	daysPerSession := 1
+	if sessionsPerWeek > 0 {
+		d := int((7.0 + float64(sessionsPerWeek) - 1) / float64(sessionsPerWeek))
+		if d > 1 {
+			daysPerSession = d
+		}
+	}
+	nextDate := time.Now().AddDate(0, 0, daysPerSession)
+
+	var plan SessionPlan
+	var focusType string
+	if isDeload {
+		plan = buildDeloadPlan(currentGrade)
+		focusType = "deload"
+	} else {
+		plan = buildPlan(currentGrade, goalGrade, weaknesses)
+		focusType = chooseFocusType(weaknesses)
+	}
+
+	warmupJSON, err := json.Marshal(plan.Warmup)
+	if err != nil {
+		return database.CreateSessionParams{}, fmt.Errorf("marshal warmup: %w", err)
+	}
+	mainJSON, err := json.Marshal(plan.Main)
+	if err != nil {
+		return database.CreateSessionParams{}, fmt.Errorf("marshal main: %w", err)
+	}
+	projectJSON, err := json.Marshal(plan.Project)
+	if err != nil {
+		return database.CreateSessionParams{}, fmt.Errorf("marshal project: %w", err)
+	}
+
+	pgDate := pgtype.Date{}
+	if err := pgDate.Scan(nextDate); err != nil {
+		return database.CreateSessionParams{}, fmt.Errorf("parse date: %w", err)
+	}
+
+	return database.CreateSessionParams{
+		UserID:         pgtype.Int4{Int32: userID, Valid: true},
+		SessionNumber:  sessionNumber + 1,
+		Date:           pgDate,
+		FocusType:      focusType,
+		PlannedWarmup:  warmupJSON,
+		PlannedMain:    mainJSON,
+		PlannedProject: projectJSON,
+	}, nil
+}
+
 func DecodeSessionPlan(s database.Session) (SessionPlan, error) {
 	var warmup, main, project []WorkoutSet
 

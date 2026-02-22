@@ -131,6 +131,28 @@ func LogSubmit(w http.ResponseWriter, r *http.Request) {
 			components.LogError("Error saving session log").Render(r.Context(), w)
 			return
 		}
+
+		// Generate next session if this is the latest one (best-effort)
+		latestSession, latestErr := database.DB.GetLatestSessionByUser(r.Context(), pgtype.Int4{Int32: userIDInt, Valid: true})
+		if latestErr == nil && latestSession.ID == int32(sessionID) {
+			currentSession, sessErr := database.DB.GetSession(r.Context(), int32(sessionID))
+			user, userErr := database.DB.GetUser(r.Context(), userIDInt)
+			if sessErr == nil && userErr == nil {
+				weaknesses, _ := climbsession.ParseWeaknesses(user.Weaknesses)
+				params, genErr := climbsession.GenerateNextSession(
+					userIDInt,
+					currentSession.SessionNumber,
+					user.CurrentMaxGrade,
+					user.GoalGrade,
+					weaknesses,
+					currentSession.Date.Time,
+					user.SessionsPerWeek,
+				)
+				if genErr == nil {
+					database.DB.CreateSession(r.Context(), params) //nolint:errcheck // best-effort
+				}
+			}
+		}
 	}
 
 	w.Header().Set("HX-Redirect", "/sessions/"+sessionIDStr)
