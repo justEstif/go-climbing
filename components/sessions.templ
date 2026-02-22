@@ -10,12 +10,23 @@ templ SessionsDashboard(user database.User, todaySessions []database.Session, pa
 	@Layout("Sessions") {
 		<h1>Sessions</h1>
 		<section class="box">
-			<strong>Current grade:</strong> { gradeName(int(user.CurrentMaxGrade)) }
-			&nbsp;|&nbsp;
-			<strong>Goal:</strong> { gradeName(int(user.GoalGrade)) }
-			&nbsp;|&nbsp;
-			<strong>Sessions/week:</strong> { strconv.Itoa(int(user.SessionsPerWeek)) }
+			<h2>Overview</h2>
+			<dl class="table rows">
+				<div>
+					<dt>Curreng grade</dt>
+					<dd>{ gradeName(int(user.CurrentMaxGrade)) }</dd>
+				</div>
+				<div>
+					<dt>Goal</dt>
+					<dd>{ gradeName(int(user.GoalGrade)) }</dd>
+				</div>
+				<div>
+					<dt>Sessions/week</dt>
+					<dd>{  strconv.Itoa(int(user.SessionsPerWeek)) }</dd>
+				</div>
+			</dl>
 		</section>
+    // TODO Instead of today - I would prefer "next session" with the date
 		<h2>Today</h2>
 		if len(todaySessions) == 0 {
 			<p>No sessions scheduled for today.</p>

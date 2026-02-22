@@ -8,13 +8,19 @@ templ ProgressPage(stats ProgressStats, gradeJSON string, wellnessJSON string, f
 			<h1>Your Progress</h1>
 			<section class="box">
 				<h2>Overview</h2>
-				<dl>
-					<dt>Sessions Logged</dt>
-					<dd>{ strconv.Itoa(stats.TotalLogged) }</dd>
-					<dt>Current Max Grade</dt>
-					<dd>{ gradeName(int(stats.CurrentGrade)) }</dd>
-					<dt>Goal Grade</dt>
-					<dd>{ gradeName(int(stats.GoalGrade)) }</dd>
+				<dl class="table rows">
+					<div>
+						<dt>Sessions Logged</dt>
+						<dd>{ strconv.Itoa(stats.TotalLogged) }</dd>
+					</div>
+					<div>
+						<dt>Current Max Grade</dt>
+						<dd>{ gradeName(int(stats.CurrentGrade)) }</dd>
+					</div>
+					<div>
+						<dt>Goal Grade</dt>
+						<dd>{ gradeName(int(stats.GoalGrade)) }</dd>
+					</div>
 				</dl>
 			</section>
 			if stats.TotalLogged == 0 {
