@@ -1,9 +1,9 @@
 package components
 
 import (
-	"strconv"
 	"github.com/justestif/go-climbing/internal/database"
 	climbsession "github.com/justestif/go-climbing/internal/session"
+	"strconv"
 )
 
 templ SessionsDashboard(user database.User, todaySessions []database.Session, pastSessions []database.Session, loggedIDs map[int32]bool) {
@@ -76,11 +76,11 @@ templ SessionDetail(session database.Session, plan *climbsession.SessionPlan, ex
 				}
 			</section>
 			<p>
-				<a href={ templ.SafeURL("/sessions/log?session_id=" + strconv.Itoa(int(session.ID))) } class="btn">Update log &rarr;</a>
+				<a href={ templ.SafeURL("/sessions/log?session_id=" + strconv.Itoa(int(session.ID))) }>Update log &rarr;</a>
 			</p>
 		} else {
 			<p>
-				<a href={ templ.SafeURL("/sessions/log?session_id=" + strconv.Itoa(int(session.ID))) } class="ok btn">Log this session &rarr;</a>
+				<a href={ templ.SafeURL("/sessions/log?session_id=" + strconv.Itoa(int(session.ID))) } class="ok">Log this session &rarr;</a>
 			</p>
 		}
 	}

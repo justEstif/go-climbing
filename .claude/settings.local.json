@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(beans *)",
+      "Bash(git add:*)",
+      "Bash(python3:*)"
+    ]
+  }
+}
