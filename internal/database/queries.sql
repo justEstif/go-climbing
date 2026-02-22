@@ -120,3 +120,8 @@ WHERE id = $6;
 -- name: DeleteLearnContent :exec
 DELETE FROM learn_content
 WHERE id = $1;
+
+-- Feedback Queries
+
+-- name: CreateFeedback :exec
+INSERT INTO feedback (user_id, message) VALUES ($1, $2);

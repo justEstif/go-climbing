@@ -11,6 +11,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createFeedback = `-- name: CreateFeedback :exec
+
+INSERT INTO feedback (user_id, message) VALUES ($1, $2)
+`
+
+type CreateFeedbackParams struct {
+	UserID  pgtype.Int4 `json:"user_id"`
+	Message string      `json:"message"`
+}
+
+// Feedback Queries
+func (q *Queries) CreateFeedback(ctx context.Context, arg CreateFeedbackParams) error {
+	_, err := q.db.Exec(ctx, createFeedback, arg.UserID, arg.Message)
+	return err
+}
+
 const createLearnContent = `-- name: CreateLearnContent :one
 INSERT INTO learn_content (category, title, content, video_url, sort_order)
 VALUES ($1, $2, $3, $4, $5)

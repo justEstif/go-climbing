@@ -1,0 +1,39 @@
+package components
+
+templ Feedback(csrfToken string) {
+	@Layout("Feedback") {
+		<h1>Feedback</h1>
+		<form
+			id="feedback-form"
+			hx-post="/feedback"
+			hx-target="#feedback-result"
+			hx-swap="innerHTML"
+		>
+			<input type="hidden" name="gorilla.csrf.Token" value={ csrfToken }/>
+			<div>
+				<label for="message">Your feedback</label>
+				<textarea
+					id="message"
+					name="message"
+					rows="6"
+					placeholder="Tell us what you think..."
+					required
+				></textarea>
+			</div>
+			<button type="submit" class="ok">Submit Feedback</button>
+		</form>
+		<div id="feedback-result"></div>
+	}
+}
+
+templ FeedbackError(message string) {
+	<div class="bad box">{ message }</div>
+}
+
+templ FeedbackSuccess() {
+	<div class="ok box">
+		<p>Thanks for your feedback! Redirecting to sessions...</p>
+		<a href="/sessions">Go to Sessions</a>
+		<script>setTimeout(() => window.location.href = "/sessions", 2000)</script>
+	</div>
+}

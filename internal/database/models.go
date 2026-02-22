@@ -8,6 +8,13 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Feedback struct {
+	ID        int32            `json:"id"`
+	UserID    pgtype.Int4      `json:"user_id"`
+	Message   string           `json:"message"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+}
+
 type LearnContent struct {
 	ID        int32       `json:"id"`
 	Category  string      `json:"category"`

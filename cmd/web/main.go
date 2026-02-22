@@ -72,6 +72,8 @@ func main() {
 			r.Get("/progress", handlers.ProgressPage)
 			r.Get("/learn", handlers.LearnListPage)
 			r.Get("/learn/{id}", handlers.LearnDetailPage)
+			r.Get("/feedback", handlers.FeedbackForm)
+			r.Post("/feedback", handlers.FeedbackSubmit)
 		})
 	})
 
